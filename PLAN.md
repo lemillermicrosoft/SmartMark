@@ -42,18 +42,18 @@ These are the key Blizzard APIs available in the 2.x (TBC Classic) client that t
 | Index | Icon    | Common Use      |
 |-------|---------|-----------------|
 | 0     | (none)  | Remove mark     |
-| 1     | ⭐ Star  | Kill 4 / Sap    |
-| 2     | 🔴 Circle | CC (Banish/Fear) |
-| 3     | 💎 Diamond | CC (Trap)      |
-| 4     | 🔺 Triangle | CC (Sheep)   |
-| 5     | 🌙 Moon  | Kill 4 / overflow |
+| 1     | ⭐ Star  | CC (Shackle / Trap) |
+| 2     | 🔴 Circle | Kill 4 / Flex   |
+| 3     | 💎 Diamond | CC (Banish/Fear) |
+| 4     | 🔺 Triangle | CC (Sap)      |
+| 5     | 🌙 Moon  | CC (Sheep)      |
 | 6     | 🟦 Square | Kill 3         |
 | 7     | ❌ Cross | Kill 2          |
 | 8     | 💀 Skull | Kill 1          |
 
 Default SmartMark convention (configurable):
-- **Kill priority order:** Skull (8) → Cross (7) → Square (6) → Moon (5)
-- **CC order:** Triangle (4, Sheep) → Diamond (3, Trap) → Circle (2, Banish) → Star (1, Sap)
+- **Kill priority order:** Skull (8) → Cross (7) → Square (6) → Circle (2)
+- **CC order:** Moon (5, Sheep) → Triangle (4, Sap) → Diamond (3, Banish/Fear) → Star (1, Shackle/Trap)
 
 ### Key API Functions
 
@@ -82,6 +82,10 @@ IsInRaid()
 IsInGroup()
 UnitIsGroupLeader("player")
 UnitIsGroupAssistant("player")
+
+-- Group composition / class scan
+GetNumGroupMembers()
+UnitClass("unit")
 ```
 
 ### NPC ID Extraction
@@ -222,7 +226,7 @@ A unit is eligible for marking if ALL of these are true:
 #### Immediate (Phase 1) Mark Assignment
 
 In Phase 1, with no mob database, assignment is purely sequential:
-- Maintain a `nextKillIndex` pointer into the kill mark list `{8, 7, 6, 5}` (Skull, X, Square, Moon)
+- Maintain a `nextKillIndex` pointer into the kill mark list `{8, 7, 6, 2}` (Skull, X, Square, Circle)
 - Each newly scrubbed mob gets `killMarks[nextKillIndex]` and the pointer advances
 - When kill marks are exhausted, additional mobs are unmarked (or optionally cycle CC marks)
 - A `/smartmark reset` slash command clears all marks and resets the session
@@ -242,11 +246,12 @@ Each mob entry in the database is classified as one of:
 | `kill1`         | Skull (8)      | Highest threat, kill first       |
 | `kill2`         | Cross (7)      | Kill second                      |
 | `kill3`         | Square (6)     | Kill third                       |
-| `kill4`         | Moon (5)       | Kill fourth                      |
-| `cc_sheep`      | Triangle (4)   | Polymorph target                 |
-| `cc_trap`       | Diamond (3)    | Hunter trap target               |
-| `cc_banish`     | Circle (2)     | Banish/Fear target               |
-| `cc_sap`        | Star (1)       | Sap target                       |
+| `kill4`         | Circle (2)     | Kill fourth / flex kill          |
+| `cc_sheep`      | Moon (5)       | Polymorph target                 |
+| `cc_sap`        | Triangle (4)   | Sap target                       |
+| `cc_banish`     | Diamond (3)    | Banish/Fear target               |
+| `cc_shackle`    | Star (1)       | Shackle Undead target            |
+| `cc_trap`       | Star (1)       | Hunter trap target (fallback)    |
 | `skip`          | (none)         | Ignore entirely (e.g. totems)    |
 | `auto`          | (computed)     | No explicit rule; use heuristics |
 
@@ -268,14 +273,27 @@ Output: assignments{}  -- guid → markIndex
 2. HEURISTIC PHASE (for "auto" mobs)
    Apply creature-type heuristics:
      Humanoid             → cc_sap (sappable) or kill
-     Beast                → cc_trap (trappable)
+         Beast                → cc_trap (trappable) or kill
      Demon                → cc_banish
-     Undead               → (not sheepable, not sapable) → kill
+         Undead               → cc_shackle (if available) or kill
      Elemental            → cc_banish or kill
      Dragonkin            → kill
      elite classification → bump to higher kill priority
 
-3. SORT & ASSIGN PHASE
+3. GROUP-COMP PHASE
+     Scan party/raid classes and build `availableCC` set:
+         MAGE    → sheep
+         ROGUE   → sap
+         WARLOCK → banish/fear
+         PRIEST  → shackle
+         HUNTER  → trap
+
+     For each mob with CC priority:
+         If that CC type is not available in the current group,
+         downgrade mob to next valid action in order:
+             explicit kill* in DB > alternative available CC > kill3
+
+4. SORT & ASSIGN PHASE
    Separate into two lists:
      killList    = all mobs with kill* priority
      ccList      = all mobs with cc_* priority
@@ -287,10 +305,10 @@ Output: assignments{}  -- guid → markIndex
 
    Assign marks top-down:
      killList[1] → Skull, killList[2] → Cross, etc.
-     ccList sorted by type → Triangle, Diamond, Circle, Star (as available)
+    ccList sorted by type → Moon, Triangle, Diamond, Star (as available)
      Overflow kills (beyond 4) → no mark or lowest available
 
-4. APPLY PHASE
+5. APPLY PHASE
    For each assignment:
      If current mark on mob differs from desired → SetRaidTarget(guid_unit, mark)
      Track applied marks to avoid conflicts
@@ -326,7 +344,7 @@ Sections:
    - Checkbox: "Real-time vs. deferred reassignment"
 
 2. **Mark Order**
-   - Drag-and-drop (or up/down buttons) to reorder kill marks (Skull, X, Square, Moon)
+    - Drag-and-drop (or up/down buttons) to reorder kill marks (Skull, X, Square, Circle)
    - Drag-and-drop to reorder CC marks
    - Re-map which priority type uses which mark (dropdowns)
 
@@ -345,7 +363,7 @@ Sections:
 Fields:
 - **NPC ID** (auto-populated if added from target; or typed manually)
 - **Mob Name** (cosmetic label only; NPC ID is the key)
-- **Priority Type** (dropdown: kill1–kill4, cc_sheep, cc_trap, cc_banish, cc_sap, skip)
+- **Priority Type** (dropdown: kill1–kill4, cc_sheep, cc_sap, cc_banish, cc_shackle, cc_trap, skip)
 - **Notes** (free text; e.g. "Mana Wyrm — interrupt arcane missiles")
 - **Zone / Dungeon** (optional tag for filtering; e.g. "Hellfire Ramparts")
 
@@ -389,19 +407,21 @@ SmartMarkDB = {
         overwriteExistingMarks = false,
         reassignmentMode = "deferred",   -- "deferred" | "realtime"
         markOrder = {
-            kill  = { 8, 7, 6, 5 },      -- Skull, X, Square, Moon
-            cc    = { 4, 3, 2, 1 },      -- Triangle, Diamond, Circle, Star
+            kill  = { 8, 7, 6, 2 },      -- Skull, X, Square, Circle
+            cc    = { 5, 4, 3, 1 },      -- Moon, Triangle, Diamond, Star
         },
         priorityToMark = {               -- user can remap these
             kill1    = 8,
             kill2    = 7,
             kill3    = 6,
-            kill4    = 5,
-            cc_sheep = 4,
-            cc_trap  = 3,
-            cc_banish = 2,
-            cc_sap   = 1,
+            kill4    = 2,
+            cc_sheep = 5,
+            cc_sap   = 4,
+            cc_banish = 3,
+            cc_shackle = 1,
+            cc_trap  = 1,
         },
+        autoDetectGroupCC = true,
     },
 
     -- Mob database: keyed by NPC ID (as string for SavedVariables safety)
@@ -623,6 +643,7 @@ function PriorityEngine:Heuristic(mob)
         Beast     = "cc_trap",
         Demon     = "cc_banish",
         Elemental = "cc_banish",
+        Undead    = "cc_shackle",
     }
     local cc = ccByType[mob.creatureType]
     if cc then return cc end
@@ -635,6 +656,48 @@ function PriorityEngine:Heuristic(mob)
     return "auto"  -- treated as kill, lowest priority
 end
 ```
+
+### Group Composition Awareness
+
+Before final mark assignment, SmartMark scans the current group and builds an availability map of CC types.
+
+```lua
+function PriorityEngine:BuildAvailableCC()
+    local available = {
+        cc_sheep = false,
+        cc_sap = false,
+        cc_banish = false,
+        cc_shackle = false,
+        cc_trap = false,
+    }
+
+    local function applyUnit(unit)
+        if not UnitExists(unit) then return end
+        local _, class = UnitClass(unit)
+        if class == "MAGE" then available.cc_sheep = true end
+        if class == "ROGUE" then available.cc_sap = true end
+        if class == "WARLOCK" then available.cc_banish = true end
+        if class == "PRIEST" then available.cc_shackle = true end
+        if class == "HUNTER" then available.cc_trap = true end
+    end
+
+    applyUnit("player")
+
+    if IsInRaid() then
+        for i = 1, GetNumGroupMembers() do
+            applyUnit("raid" .. i)
+        end
+    elseif IsInGroup() then
+        for i = 1, 4 do
+            applyUnit("party" .. i)
+        end
+    end
+
+    return available
+end
+```
+
+If a mob is tagged with unavailable CC (example: `cc_sheep` and no Mage), the engine downgrades that mob to another available CC type or to a kill priority based on DB rule preference.
 
 ### ApplyMarks — Unit Re-identification
 
