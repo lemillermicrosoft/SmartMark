@@ -761,47 +761,56 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 
 ## Implementation Milestones
 
+### Current Status Snapshot (2026-06-17)
+
+- Core addon scaffold is implemented and loadable via `SmartMark.toc`.
+- Core scrub-mark loop works (hold/toggle session, mouseover capture, temporary marks, deferred/realtime reassignment).
+- Clear-marks keybind exists with retry sweeps for delayed token availability.
+- Settings panel is functional for core toggles/modes/modifier keys.
+- Import/export module is implemented with slash commands and an in-game import/export window.
+- Remaining high-priority work: mob database curation, full mob editor CRUD UI, mark remapping UI, and assignment retry queue tied to `NAME_PLATE_UNIT_ADDED`.
+
 ### Milestone 1 — Skeleton & Core Loop
 
-- [ ] `SmartMark.toc` with correct interface version
-- [ ] `SmartMark.lua` namespace setup (`SmartMark = {}`)
-- [ ] `Config/Defaults.lua` with full default settings table
-- [ ] `Config/Config.lua` with `Get`/`Set` wrappers around `SmartMarkDB`
-- [ ] `Core/EventHandler.lua` registering `UPDATE_MOUSEOVER_UNIT`
-- [ ] `Core/MarkManager.lua` with session start/stop and sequential mark assignment
-- [ ] Slash commands: `/sm reset`, `/sm start`, `/sm stop`, `/sm config`
-- [ ] **Deliverable:** Hold Alt+Shift, mouse over mobs, they get Skull/X/Square/Moon in order
+- [x] `SmartMark.toc` with correct interface version
+- [x] `SmartMark.lua` namespace setup (`SmartMark = {}`)
+- [x] `Config/Defaults.lua` with full default settings table
+- [x] `Config/Config.lua` with `Get`/`Set` wrappers around `SmartMarkDB`
+- [x] `Core/EventHandler.lua` registering `UPDATE_MOUSEOVER_UNIT`
+- [x] `Core/MarkManager.lua` with session start/stop and sequential mark assignment
+- [x] Slash commands: `/sm reset`, `/sm start`, `/sm stop`, `/sm config`
+- [x] **Deliverable:** Hold Alt+Shift, mouse over mobs, they get Skull/X/Square/Circle in order
 
 ### Milestone 2 — Smart Priority Engine
 
-- [ ] `Core/MobDatabase.lua` with lookup by NPC ID
-- [ ] `Core/PriorityEngine.lua` with heuristic + DB-based assignment
-- [ ] Deferred reassignment on session end (keys released)
-- [ ] GUID → unit token resolution via nameplates
+- [x] `Core/MobDatabase.lua` with lookup by NPC ID
+- [x] `Core/PriorityEngine.lua` with heuristic + DB-based assignment
+- [x] Deferred reassignment on session end (keys released)
+- [x] GUID → unit token resolution via nameplates
 - [ ] Mark application retry queue for out-of-range units
-- [ ] **Deliverable:** Mixed pack of Humanoids/Beasts/Demons auto-sorted into kill + CC marks
+- [~] **Deliverable:** Mixed pack of Humanoids/Beasts/Demons auto-sorted into kill + CC marks (working baseline; retry queue still pending)
 
 ### Milestone 3 — Configuration UI
 
-- [ ] `UI/SettingsPanel.lua` — standalone frame, tabs, modifier key picker, mode toggles
+- [~] `UI/SettingsPanel.lua` — standalone frame, tabs, modifier key picker, mode toggles (single-page functional panel implemented; tabs still pending)
 - [ ] `UI/MobEditor.lua` — scrollable list + add/edit/delete + "Add from Target" shortcut
 - [ ] Mark order remapping UI
 - [ ] **Deliverable:** Fully configurable via in-game UI, no config file editing needed
 
 ### Milestone 4 — Import/Export
 
-- [ ] `Config/ImportExport.lua` — encoder/decoder for `SMDB:` format
-- [ ] Import UI panel with merge/replace options and validation feedback
-- [ ] Export panel with "Select All + Copy" instruction
-- [ ] **Deliverable:** Share mob databases between players via copy-paste strings
+- [x] `Config/ImportExport.lua` — encoder/decoder for `SMDB:` format
+- [x] Import UI panel with merge/replace options and validation feedback
+- [x] Export panel with "Select All + Copy" instruction
+- [x] **Deliverable:** Share mob databases between players via copy-paste strings
 
 ### Milestone 5 — Polish & Dungeon Data
 
 - [ ] Populate initial mob database with TBC Classic dungeon mobs (based on your research)
-- [ ] Session overlay HUD
+- [x] Session overlay HUD
 - [ ] `NAME_PLATE_UNIT_ADDED` retry for deferred mark failures
-- [ ] Combat state handling (disable in combat option)
-- [ ] `/sm status` command showing current session mobs and marks
+- [x] Combat state handling (disable in combat option)
+- [x] `/sm status` command showing current session mobs and marks
 - [ ] **Deliverable:** Ready-to-use addon with practical dungeon data
 
 ---
