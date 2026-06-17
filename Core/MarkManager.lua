@@ -79,6 +79,23 @@ function MarkManager:Initialize()
     self.pendingClearAnnounced = false
 end
 
+function MarkManager:UpdateOverlayState()
+    if not addon.UI then
+        return
+    end
+
+    local active = self.session and self.session.active
+    if addon.UI.SetOverlayActive then
+        addon.UI:SetOverlayActive(active)
+    end
+
+    if active and addon.UI.UpdateOverlay then
+        local count = #(self.session.mobs or {})
+        local markMode = addon.Config:Get("activationMode") or "hold"
+        addon.UI:UpdateOverlay(string.format("SmartMark Active\nMode: %s\nTracked Mobs: %d", markMode, count))
+    end
+end
+
 function MarkManager:PerformClearSweep()
     local cleared = 0
     local seenGUID = {}
@@ -163,6 +180,7 @@ function MarkManager:StartSession(reason)
 
     self.session.active = true
     self.session.reason = reason or "unknown"
+    self:UpdateOverlayState()
 end
 
 function MarkManager:StopSession(runReassign)
@@ -181,6 +199,7 @@ function MarkManager:StopSession(runReassign)
     SmartMarkCharDB.lastSession.timestamp = time()
     SmartMarkCharDB.lastSession.zone = GetRealZoneText() or ""
     SmartMarkCharDB.lastSession.marks = self.session.marks
+    self:UpdateOverlayState()
 end
 
 function MarkManager:ResetSession(clearMarks)
@@ -205,6 +224,7 @@ function MarkManager:ResetSession(clearMarks)
     self.session.guidIndex = {}
     self.session.marks = {}
     self.session.nextKillIndex = 1
+    self:UpdateOverlayState()
 
     return cleared
 end
@@ -306,6 +326,7 @@ function MarkManager:OnMouseoverUpdate()
 
     table.insert(self.session.mobs, mobInfo)
     self.session.guidIndex[guid] = #self.session.mobs
+    self:UpdateOverlayState()
 
     self:AssignTemporaryMark(mobInfo)
 

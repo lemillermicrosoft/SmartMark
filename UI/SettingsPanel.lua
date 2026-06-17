@@ -4,6 +4,71 @@ addon.UI = addon.UI or {}
 local UI = addon.UI
 
 local panel
+local controls = {}
+
+local function setConfig(path, value)
+    if addon.Config then
+        addon.Config:Set(path, value)
+    end
+end
+
+local function getConfig(path)
+    if addon.Config then
+        return addon.Config:Get(path)
+    end
+    return nil
+end
+
+local function createCheckButton(parent, label, x, y, path)
+    local checkbox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+    checkbox:SetPoint("TOPLEFT", x, y)
+    checkbox.Text:SetText(label)
+    checkbox:SetScript("OnClick", function(self)
+        setConfig(path, self:GetChecked() and true or false)
+    end)
+    return checkbox
+end
+
+local function createDropdown(parent, width, x, y, values, onSelect)
+    local dropdown = CreateFrame("Frame", nil, parent, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", x, y)
+    UIDropDownMenu_SetWidth(dropdown, width)
+    UIDropDownMenu_Initialize(dropdown, function(self)
+        for _, row in ipairs(values) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = row.label
+            info.value = row.value
+            info.func = function()
+                UIDropDownMenu_SetSelectedValue(self, row.value)
+                onSelect(row.value)
+            end
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+    return dropdown
+end
+
+local function refreshControls()
+    if not panel then
+        return
+    end
+
+    controls.alt:SetChecked(getConfig("modifierKeys.alt"))
+    controls.shift:SetChecked(getConfig("modifierKeys.shift"))
+    controls.ctrl:SetChecked(getConfig("modifierKeys.ctrl"))
+
+    controls.disableCombat:SetChecked(getConfig("disableInCombat"))
+    controls.overwrite:SetChecked(getConfig("overwriteExistingMarks"))
+    controls.autoCC:SetChecked(getConfig("autoDetectGroupCC"))
+
+    local activation = getConfig("activationMode")
+    UIDropDownMenu_SetSelectedValue(controls.activationMode, activation)
+    UIDropDownMenu_SetText(controls.activationMode, activation == "toggle" and "Toggle" or "Hold")
+
+    local reassignment = getConfig("reassignmentMode")
+    UIDropDownMenu_SetSelectedValue(controls.reassignmentMode, reassignment)
+    UIDropDownMenu_SetText(controls.reassignmentMode, reassignment == "realtime" and "Real-time" or "Deferred")
+end
 
 local function createPanel()
     if panel then
@@ -11,7 +76,7 @@ local function createPanel()
     end
 
     panel = CreateFrame("Frame", "SmartMarkSettingsPanel", UIParent)
-    panel:SetSize(480, 280)
+    panel:SetSize(560, 420)
     panel:SetPoint("CENTER")
     panel:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -27,10 +92,81 @@ local function createPanel()
     title:SetPoint("TOP", 0, -16)
     title:SetText("SmartMark Settings")
 
-    local copy = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    copy:SetPoint("TOPLEFT", 24, -52)
-    copy:SetJustifyH("LEFT")
-    copy:SetText("UI scaffolding is ready. Full settings controls are next.")
+    local modifierHeader = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    modifierHeader:SetPoint("TOPLEFT", 26, -50)
+    modifierHeader:SetText("Modifier Keys (Hold Mode)")
+
+    controls.alt = createCheckButton(panel, "Alt", 26, -76, "modifierKeys.alt")
+    controls.shift = createCheckButton(panel, "Shift", 26, -104, "modifierKeys.shift")
+    controls.ctrl = createCheckButton(panel, "Ctrl", 26, -132, "modifierKeys.ctrl")
+
+    local activationHeader = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    activationHeader:SetPoint("TOPLEFT", 290, -50)
+    activationHeader:SetText("Activation")
+
+    local activationLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    activationLabel:SetPoint("TOPLEFT", 290, -76)
+    activationLabel:SetText("Mode")
+
+    controls.activationMode = createDropdown(panel, 130, 280, -94, {
+        { label = "Hold", value = "hold" },
+        { label = "Toggle", value = "toggle" },
+    }, function(value)
+        setConfig("activationMode", value)
+    end)
+
+    local reassignmentLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    reassignmentLabel:SetPoint("TOPLEFT", 290, -136)
+    reassignmentLabel:SetText("Reassignment")
+
+    controls.reassignmentMode = createDropdown(panel, 130, 280, -154, {
+        { label = "Deferred", value = "deferred" },
+        { label = "Real-time", value = "realtime" },
+    }, function(value)
+        setConfig("reassignmentMode", value)
+    end)
+
+    local behaviorHeader = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    behaviorHeader:SetPoint("TOPLEFT", 26, -192)
+    behaviorHeader:SetText("Behavior")
+
+    controls.disableCombat = createCheckButton(panel, "Disable while in combat", 26, -218, "disableInCombat")
+    controls.overwrite = createCheckButton(panel, "Overwrite existing marks", 26, -246, "overwriteExistingMarks")
+    controls.autoCC = createCheckButton(panel, "Auto-detect available group CC", 26, -274, "autoDetectGroupCC")
+
+    local helper = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    helper:SetPoint("TOPLEFT", 26, -316)
+    helper:SetJustifyH("LEFT")
+    helper:SetText("Tip: Use /sm export to copy your mob DB, and /sm import merge|replace SMDB:1:...")
+
+    local importExportButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    importExportButton:SetSize(120, 24)
+    importExportButton:SetPoint("TOPLEFT", 26, -350)
+    importExportButton:SetText("Import/Export")
+    importExportButton:SetScript("OnClick", function()
+        if addon.UI and addon.UI.OpenMobEditor then
+            addon.UI:OpenMobEditor()
+        end
+    end)
+
+    local resetButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    resetButton:SetSize(120, 24)
+    resetButton:SetPoint("BOTTOMLEFT", 24, 18)
+    resetButton:SetText("Reset Session")
+    resetButton:SetScript("OnClick", function()
+        if addon.MarkManager then
+            local cleared = addon.MarkManager:ResetSession(true) or 0
+            addon.Print("Session reset. Cleared marks: " .. tostring(cleared))
+        end
+    end)
+
+    local closeTextButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    closeTextButton:SetSize(120, 24)
+    closeTextButton:SetPoint("BOTTOMRIGHT", -24, 18)
+    closeTextButton:SetText("Close")
+    closeTextButton:SetScript("OnClick", function()
+        panel:Hide()
+    end)
 
     local closeButton = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
     closeButton:SetPoint("TOPRIGHT", -4, -4)
@@ -41,6 +177,7 @@ function UI:OpenConfig()
     if panel:IsShown() then
         panel:Hide()
     else
+        refreshControls()
         panel:Show()
     end
 end

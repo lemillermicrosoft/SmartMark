@@ -42,10 +42,12 @@ function SmartMark_ToggleSession()
 end
 
 local function handleSlashCommand(input)
-    local cmd = string.lower(string.match(input or "", "^%s*(%S*)") or "")
+    local cmd, rest = string.match(input or "", "^%s*(%S*)%s*(.-)%s*$")
+    cmd = string.lower(cmd or "")
+    rest = rest or ""
 
     if cmd == "" or cmd == "help" then
-        printMsg("Commands: /sm start, /sm stop, /sm reset, /sm status, /sm config")
+        printMsg("Commands: /sm start, /sm stop, /sm reset, /sm status, /sm config, /sm ie, /sm export, /sm import")
         return
     end
 
@@ -86,6 +88,64 @@ local function handleSlashCommand(input)
             addon.UI:OpenConfig()
         else
             printMsg("Config UI not implemented yet")
+        end
+        return
+    end
+
+    if cmd == "ie" or cmd == "importexport" then
+        if addon.UI and addon.UI.OpenMobEditor then
+            addon.UI:OpenMobEditor()
+        else
+            printMsg("Import/export window not available")
+        end
+        return
+    end
+
+    if cmd == "export" then
+        if not addon.ImportExport then
+            printMsg("Import/export module unavailable")
+            return
+        end
+
+        local data = addon.ImportExport:Export()
+        printMsg("Export ready. Paste from chat edit box.")
+        ChatFrame_OpenChat(data)
+        return
+    end
+
+    if cmd == "import" or cmd == "importreplace" then
+        if not addon.ImportExport then
+            printMsg("Import/export module unavailable")
+            return
+        end
+
+        local mode = "merge"
+        local payload = rest
+
+        if cmd == "importreplace" then
+            mode = "replace"
+        else
+            local firstWord, remaining = string.match(rest, "^(%S+)%s*(.-)%s*$")
+            local lowerWord = string.lower(firstWord or "")
+            if lowerWord == "replace" then
+                mode = "replace"
+                payload = remaining or ""
+            elseif lowerWord == "merge" then
+                mode = "merge"
+                payload = remaining or ""
+            end
+        end
+
+        if payload == "" then
+            printMsg("Usage: /sm import [merge|replace] SMDB:1:...")
+            return
+        end
+
+        local ok, result = addon.ImportExport:Import(payload, mode)
+        if ok then
+            printMsg(result)
+        else
+            printMsg("Import failed: " .. tostring(result))
         end
         return
     end
