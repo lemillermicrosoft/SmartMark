@@ -147,6 +147,19 @@ function MarkManager:BeginDeferredClearRetry()
     end
 end
 
+function MarkManager:IsDeferredClearActive()
+    return self.pendingClearUntil and self.pendingClearUntil > GetTime()
+end
+
+function MarkManager:CancelDeferredClearRetry()
+    local extraCleared = self.pendingClearExtraCleared or 0
+    self.pendingClearUntil = 0
+    self.pendingClearNextSweepAt = 0
+    self.pendingClearExtraCleared = 0
+    self.pendingClearAnnounced = false
+    return extraCleared
+end
+
 function MarkManager:ProcessDeferredClear()
     local now = GetTime()
     if not self.pendingClearUntil or self.pendingClearUntil <= 0 then
