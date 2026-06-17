@@ -1,0 +1,9 @@
+<Bindings>
+    <Binding name="SMARTMARK_CLEAR_MARKS" header="SMARTMARK" default="ALT-SHIFT-DELETE">
+        SmartMark_ClearAllMarks()
+    </Binding>
+
+    <Binding name="SMARTMARK_TOGGLE_SESSION" header="SMARTMARK">
+        SmartMark_ToggleSession()
+    </Binding>
+</Bindings>

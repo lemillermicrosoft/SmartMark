@@ -1,0 +1,24 @@
+## Interface: 20504
+## Title: SmartMark
+## Notes: Smart raid mark assignment for TBC Classic tanks
+## Author: Leroy
+## Version: 0.1.0-alpha
+## SavedVariables: SmartMarkDB
+## SavedVariablesPerCharacter: SmartMarkCharDB
+
+Bindings.xml
+
+SmartMark.lua
+
+Config\Defaults.lua
+Config\Config.lua
+Config\ImportExport.lua
+
+Core\MobDatabase.lua
+Core\PriorityEngine.lua
+Core\MarkManager.lua
+Core\EventHandler.lua
+
+UI\SettingsPanel.lua
+UI\MobEditor.lua
+UI\SessionOverlay.lua
