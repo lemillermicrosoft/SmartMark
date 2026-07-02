@@ -131,11 +131,16 @@ function PriorityEngine:ApplyMarks(session)
         return
     end
 
+    local overwrite = addon.Config:Get("overwriteExistingMarks")
+
     for guid, mark in pairs(session.marks) do
         local unit = self:FindUnitByGUID(guid)
         if unit and mark then
             local current = GetRaidTargetIndex(unit)
-            if current ~= mark then
+            if (not overwrite) and current and current > 0 and current ~= mark then
+                -- Respect manual or pre-existing marks unless overwrite is explicitly enabled.
+                session.marks[guid] = current
+            elseif current ~= mark then
                 SetRaidTarget(unit, mark)
             end
         end

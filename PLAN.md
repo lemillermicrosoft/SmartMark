@@ -17,8 +17,8 @@ A TBC Classic WoW addon for tanks that automates raid target marking during dung
 6. [Core Algorithms](#core-algorithms)
 7. [UI Design](#ui-design)
 8. [Implementation Milestones](#implementation-milestones)
-9. [Limitations & Considerations](#limitations--considerations)
-
+9. [Limitations & Considerations](#limitations--considerations)6. [Planned: Auto Pack Reset](#planned-auto-pack-reset)
+7. [Planned: F-Key Mark Assignment Hotkeys](#planned-f-key-mark-assignment-hotkeys)
 ---
 
 ## Overview & Goals
@@ -795,6 +795,8 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 - [~] `UI/SettingsPanel.lua` — standalone frame, tabs, modifier key picker, mode toggles (single-page functional panel implemented; tabs still pending)
 - [ ] `UI/MobEditor.lua` — scrollable list + add/edit/delete + "Add from Target" shortcut
 - [ ] Mark order remapping UI
+- [ ] F-key quick-assign bindings (`Bindings.xml` + 8 global stubs in `SmartMark.lua`)
+- [ ] `fKeyPriorityMap` settings + 8-dropdown F-Key Quick Assign section in Settings Panel
 - [ ] **Deliverable:** Fully configurable via in-game UI, no config file editing needed
 
 ### Milestone 4 — Import/Export
@@ -811,7 +813,191 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 - [ ] `NAME_PLATE_UNIT_ADDED` retry for deferred mark failures
 - [x] Combat state handling (disable in combat option)
 - [x] `/sm status` command showing current session mobs and marks
+- [ ] Auto pack reset on all-mobs-dead (`COMBAT_LOG_EVENT_UNFILTERED` → `UNIT_DIED` tracking)
+- [ ] `autoResetOnPackDeath` and `autoResetMinMobs` settings + Settings Panel controls
 - [ ] **Deliverable:** Ready-to-use addon with practical dungeon data
+
+---
+
+## Planned: Auto Pack Reset
+
+### Problem
+
+After a tank kills a pack, the session still holds the previous mobs and their marks. Starting the next pack requires manually clearing marks and restarting the session via `/sm reset`, which breaks flow.
+
+### Goal
+
+Automatically detect when all mobs in the current session have died, clear their marks, and reset the session state — so scrubbing the next pack works immediately without any user action.
+
+### Detection Strategy
+
+WoW TBC Classic does not fire a single "all tracked mobs are dead" event. The approach is to hook `COMBAT_LOG_EVENT_UNFILTERED` and track UNIT_DIED events for GUIDs in the active session.
+
+```lua
+-- EventHandler registers:
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+
+-- Handler:
+if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+    local _, subEvent, _, _, _, _, _, destGUID = CombatLogGetCurrentEventInfo()
+    if subEvent == "UNIT_DIED" then
+        MarkManager:OnUnitDied(destGUID)
+    end
+end
+```
+
+`MarkManager:OnUnitDied(guid)` implementation:
+
+```lua
+function MarkManager:OnUnitDied(guid)
+    if not self.session or not self.session.guidIndex[guid] then
+        return  -- not a mob we're tracking
+    end
+
+    self.session.deadCount = (self.session.deadCount or 0) + 1
+
+    local total = #self.session.mobs
+    if self.session.deadCount >= total and total > 0 then
+        -- All tracked mobs are confirmed dead: clear and reset
+        self:ResetSession(true)  -- clears marks and sets deferred retry
+        addon.Print("Pack cleared — session reset.")
+    end
+end
+```
+
+### Considerations
+
+- **Minimum mob threshold:** Only auto-reset if the session tracked at least 2 mobs. A single-mob kill (e.g. pulling one stray) should not reset. Make this threshold configurable: `autoResetMinMobs` (default: `2`).
+- **Skip mobs:** Mobs with `priorityType == "skip"` do not increment `deadCount` nor count toward the total, so they cannot block auto-reset.
+- **In-session death during scrub:** If a mob dies before scrubbing is complete (e.g. AoE nuke during hold), it still counts. The remaining live mobs will eventually die and trigger reset normally.
+- **False positives:** `UNIT_DIED` fires for player deaths and pet deaths too — the GUID check against `session.guidIndex` guards against this.
+- **Settings:** Add a toggle `autoResetOnPackDeath` (default: `true`) so players can disable auto-reset if they prefer manual control.
+
+### Data Model Additions
+
+New fields in `SmartMarkDB.settings`:
+
+```lua
+autoResetOnPackDeath = true,
+autoResetMinMobs     = 2,
+```
+
+New field in the in-memory session state:
+
+```lua
+deadCount = 0,  -- incremented each time a tracked GUID dies
+```
+
+### Settings Panel Addition
+
+Under **Behavior** section:
+- Checkbox: `"Auto-reset session when all tracked mobs die"` → `autoResetOnPackDeath`
+- Number input / slider: `"Minimum mobs for auto-reset"` (1–8) → `autoResetMinMobs`
+
+### Milestone Placement
+
+This belongs in **Milestone 5 — Polish**. It depends on the core session loop (Milestone 1) and the settings panel (Milestone 3).
+
+---
+
+## Planned: F-Key Mark Assignment Hotkeys
+
+### Problem
+
+Many WoW players use F1–F8 to manually set raid marks during play. SmartMark should allow the user to quickly reconfigure which mark gets assigned to a specific priority type by pressing a key combo (e.g. Ctrl+Alt+F1 sets Skull as the kill1 mark, Ctrl+Alt+F5 sets Moon, etc.).
+
+### Goal
+
+Provide 8 keybindings — `Ctrl+Alt+F1` through `Ctrl+Alt+F8` — that the user can remap in the standard WoW Keybindings UI. When pressed, the binding cycles or directly assigns the corresponding raid icon to the "currently focused" priority slot, driven by what the user last had selected in a simple in-game picker.
+
+### WoW Raid Icon Index ↔ F-Key Default Mapping
+
+The default pairing mirrors the conventional F-key → icon convention used by many guilds:
+
+| Keybind         | Raid Icon Index | Icon       | Default Priority |
+|-----------------|-----------------|------------|------------------|
+| Ctrl+Alt+F1     | 1               | ⭐ Star     | cc_shackle / cc_trap |
+| Ctrl+Alt+F2     | 2               | 🔴 Circle  | kill4            |
+| Ctrl+Alt+F3     | 3               | 💎 Diamond | cc_banish        |
+| Ctrl+Alt+F4     | 4               | 🔺 Triangle| cc_sap           |
+| Ctrl+Alt+F5     | 5               | 🌙 Moon    | cc_sheep         |
+| Ctrl+Alt+F6     | 6               | 🟦 Square  | kill3            |
+| Ctrl+Alt+F7     | 7               | ❌ Cross   | kill2            |
+| Ctrl+Alt+F8     | 8               | 💀 Skull   | kill1            |
+
+### Binding Behavior
+
+Each binding does **not** directly set a mark on a unit. Instead, it **remaps the priority → mark assignment** for one priority type:
+
+- The user selects which priority type is the "target" via the Settings Panel (a dropdown: `kill1`, `kill2`, `cc_sheep`, etc.) — this is the "assignment target".
+- Pressing `Ctrl+Alt+F5` (for example) sets `priorityToMark[selectedPriorityType] = 5`.
+- A chat confirmation is printed: `SmartMark: kill1 is now marked with Moon (5).`
+
+Alternatively (simpler UX): each F-key is hardwired to one priority type in the default mapping above, and pressing it just toggles the mark for that slot to the corresponding index. No picker needed.
+
+**Recommended approach (hardwired defaults + user remappable in Settings):**
+1. Bindings call named global functions `SmartMark_SetMarkF1()` … `SmartMark_SetMarkF8()`.
+2. Each function sets `priorityToMark[defaultPriorityForKey] = iconIndex`.
+3. The user can reassign which priority type each F-key controls from the Settings Panel.
+
+### Bindings.xml Additions
+
+```xml
+<Binding name="SMARTMARK_MARK_F1" header="SMARTMARK" default="CTRL-ALT-F1">
+    SmartMark_SetMarkF1()
+</Binding>
+<Binding name="SMARTMARK_MARK_F2" header="SMARTMARK" default="CTRL-ALT-F2">
+    SmartMark_SetMarkF2()
+</Binding>
+<!-- ... F3 through F8 ... -->
+<Binding name="SMARTMARK_MARK_F8" header="SMARTMARK" default="CTRL-ALT-F8">
+    SmartMark_SetMarkF8()
+</Binding>
+```
+
+### SmartMark.lua Global Stubs
+
+```lua
+-- These globals are invoked by the Bindings system.
+-- defaultFKeyPriority is stored in settings as `fKeyPriorityMap`.
+for i = 1, 8 do
+    _G["SmartMark_SetMarkF" .. i] = function()
+        local priority = addon.Config:Get("fKeyPriorityMap.f" .. i)
+        if not priority then return end
+        addon.Config:Set("priorityToMark." .. priority, i)
+        addon.Print(priority .. " remapped to mark index " .. i)
+    end
+end
+```
+
+### Data Model Additions
+
+New field in `SmartMarkDB.settings`:
+
+```lua
+fKeyPriorityMap = {
+    f1 = "cc_shackle",   -- Star
+    f2 = "kill4",        -- Circle
+    f3 = "cc_banish",    -- Diamond
+    f4 = "cc_sap",       -- Triangle
+    f5 = "cc_sheep",     -- Moon
+    f6 = "kill3",        -- Square
+    f7 = "kill2",        -- Cross
+    f8 = "kill1",        -- Skull
+},
+```
+
+### Settings Panel Addition
+
+Under a new sub-section **"F-Key Quick Assign"**:
+- 8 dropdowns, one per F-key slot (F1–F8).
+- Each dropdown contains all priority types (`kill1`–`kill4`, `cc_sheep`, `cc_sap`, `cc_banish`, `cc_shackle`, `cc_trap`, `skip`).
+- Changing a dropdown updates `fKeyPriorityMap.fN`.
+- Label format: `Ctrl+Alt+F1 → [dropdown]`
+
+### Milestone Placement
+
+This belongs in **Milestone 3 — Configuration UI**, since it requires both `Bindings.xml` entries and a Settings Panel section. The global stub functions live in `SmartMark.lua`.
 
 ---
 
