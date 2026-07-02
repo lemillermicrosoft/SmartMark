@@ -3,6 +3,8 @@ addon.PriorityEngine = addon.PriorityEngine or {}
 
 local PriorityEngine = addon.PriorityEngine
 
+PriorityEngine.pendingMarks = {}
+
 local killWeights = {
     kill1 = 1,
     kill2 = 2,
@@ -143,8 +145,38 @@ function PriorityEngine:ApplyMarks(session)
             elseif current ~= mark then
                 SetRaidTarget(unit, mark)
             end
+        elseif mark then
+            -- Unit not currently in range; queue for retry when its nameplate appears.
+            self:QueuePendingMark(guid, mark)
         end
     end
+end
+
+function PriorityEngine:QueuePendingMark(guid, mark)
+    self.pendingMarks[guid] = mark
+end
+
+function PriorityEngine:RetryPendingMark(unit)
+    if not UnitExists(unit) then
+        return
+    end
+    local guid = UnitGUID(unit)
+    if not guid then
+        return
+    end
+    local mark = self.pendingMarks[guid]
+    if not mark then
+        return
+    end
+    local current = GetRaidTargetIndex(unit)
+    if current ~= mark then
+        SetRaidTarget(unit, mark)
+    end
+    self.pendingMarks[guid] = nil
+end
+
+function PriorityEngine:ClearPendingMarks()
+    self.pendingMarks = {}
 end
 
 function PriorityEngine:Reassign(session)

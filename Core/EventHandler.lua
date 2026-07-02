@@ -5,6 +5,8 @@ frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 frame:RegisterEvent("PLAYER_REGEN_DISABLED")
 frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+frame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 
 local elapsedSincePoll = 0
 frame:SetScript("OnUpdate", function(_, elapsed)
@@ -20,7 +22,7 @@ frame:SetScript("OnUpdate", function(_, elapsed)
     end
 end)
 
-frame:SetScript("OnEvent", function(_, event)
+frame:SetScript("OnEvent", function(_, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         if addon.MarkManager then
             addon.MarkManager:Initialize()
@@ -46,6 +48,22 @@ frame:SetScript("OnEvent", function(_, event)
     if event == "GROUP_ROSTER_UPDATE" then
         if addon.MarkManager and addon.Config:Get("reassignmentMode") == "realtime" and addon.MarkManager.session and addon.MarkManager.session.active then
             addon.PriorityEngine:Reassign(addon.MarkManager.session)
+        end
+        return
+    end
+
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local _, subEvent, _, _, _, _, destGUID = ...
+        if subEvent == "UNIT_DIED" and addon.MarkManager then
+            addon.MarkManager:OnUnitDied(destGUID)
+        end
+        return
+    end
+
+    if event == "NAME_PLATE_UNIT_ADDED" then
+        local unit = ...
+        if addon.PriorityEngine then
+            addon.PriorityEngine:RetryPendingMark(unit)
         end
     end
 end)

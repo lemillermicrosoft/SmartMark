@@ -47,6 +47,19 @@ function SmartMark_ToggleSession()
     end
 end
 
+-- F-key quick-assign globals (invoked by Ctrl+Alt+F1–F8 keybindings).
+-- Each binding remaps one priority type → its F-key's icon index.
+local markIconNames = { "Star", "Circle", "Diamond", "Triangle", "Moon", "Square", "Cross", "Skull" }
+for i = 1, 8 do
+    _G["SmartMark_SetMarkF" .. i] = function()
+        if not addon.Config then return end
+        local priority = addon.Config:Get("fKeyPriorityMap.f" .. i)
+        if not priority then return end
+        addon.Config:Set("priorityToMark." .. priority, i)
+        printMsg(priority .. " -> " .. (markIconNames[i] or i) .. " (" .. i .. ")")
+    end
+end
+
 local function handleSlashCommand(input)
     local cmd, rest = string.match(input or "", "^%s*(%S*)%s*(.-)%s*$")
     cmd = string.lower(cmd or "")

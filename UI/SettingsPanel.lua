@@ -60,6 +60,7 @@ local function refreshControls()
     controls.disableCombat:SetChecked(getConfig("disableInCombat"))
     controls.overwrite:SetChecked(getConfig("overwriteExistingMarks"))
     controls.autoCC:SetChecked(getConfig("autoDetectGroupCC"))
+    controls.autoReset:SetChecked(getConfig("autoResetOnPackDeath"))
 
     local activation = getConfig("activationMode")
     UIDropDownMenu_SetSelectedValue(controls.activationMode, activation)
@@ -76,7 +77,7 @@ local function createPanel()
     end
 
     panel = CreateFrame("Frame", "SmartMarkSettingsPanel", UIParent)
-    panel:SetSize(560, 420)
+    panel:SetSize(560, 450)
     panel:SetPoint("CENTER")
     panel:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -133,15 +134,16 @@ local function createPanel()
     controls.disableCombat = createCheckButton(panel, "Disable while in combat", 26, -218, "disableInCombat")
     controls.overwrite = createCheckButton(panel, "Overwrite existing marks", 26, -246, "overwriteExistingMarks")
     controls.autoCC = createCheckButton(panel, "Auto-detect available group CC", 26, -274, "autoDetectGroupCC")
+    controls.autoReset = createCheckButton(panel, "Auto-reset session when all tracked mobs die", 26, -302, "autoResetOnPackDeath")
 
     local helper = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    helper:SetPoint("TOPLEFT", 26, -316)
+    helper:SetPoint("TOPLEFT", 26, -342)
     helper:SetJustifyH("LEFT")
     helper:SetText("Tip: Use /sm export to copy your mob DB, and /sm import merge|replace SMDB:1:...")
 
     local importExportButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     importExportButton:SetSize(120, 24)
-    importExportButton:SetPoint("TOPLEFT", 26, -350)
+    importExportButton:SetPoint("TOPLEFT", 26, -376)
     importExportButton:SetText("Import/Export")
     importExportButton:SetScript("OnClick", function()
         if addon.UI and addon.UI.OpenMobEditor then

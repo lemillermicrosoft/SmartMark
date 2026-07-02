@@ -72,6 +72,7 @@ function MarkManager:Initialize()
         guidIndex = {},
         marks = {},
         nextKillIndex = 1,
+        deadCount = 0,
     }
     self.pendingClearUntil = 0
     self.pendingClearNextSweepAt = 0
@@ -237,6 +238,12 @@ function MarkManager:ResetSession(clearMarks)
     self.session.guidIndex = {}
     self.session.marks = {}
     self.session.nextKillIndex = 1
+    self.session.deadCount = 0
+
+    if addon.PriorityEngine and addon.PriorityEngine.ClearPendingMarks then
+        addon.PriorityEngine:ClearPendingMarks()
+    end
+
     self:UpdateOverlayState()
 
     return cleared
@@ -345,6 +352,42 @@ function MarkManager:OnMouseoverUpdate()
 
     if addon.Config:Get("reassignmentMode") == "realtime" and addon.PriorityEngine then
         addon.PriorityEngine:Reassign(self.session)
+    end
+end
+
+function MarkManager:OnUnitDied(guid)
+    if not self.session then
+        return
+    end
+
+    local idx = self.session.guidIndex[guid]
+    if not idx then
+        return
+    end
+
+    -- Skip mobs that were explicitly marked as skip priority.
+    local mob = self.session.mobs[idx]
+    if mob and mob.priorityType == "skip" then
+        return
+    end
+
+    self.session.deadCount = self.session.deadCount + 1
+
+    if not addon.Config:Get("autoResetOnPackDeath") then
+        return
+    end
+
+    local nonSkipTotal = 0
+    for _, m in ipairs(self.session.mobs) do
+        if m.priorityType ~= "skip" then
+            nonSkipTotal = nonSkipTotal + 1
+        end
+    end
+
+    local minMobs = addon.Config:Get("autoResetMinMobs") or 2
+    if nonSkipTotal >= minMobs and self.session.deadCount >= nonSkipTotal then
+        self:ResetSession(true)
+        addon.Print("Pack cleared \xe2\x80\x94 session reset.")
     end
 end
 
