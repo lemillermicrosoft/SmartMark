@@ -761,14 +761,18 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 
 ## Implementation Milestones
 
-### Current Status Snapshot (2026-06-17)
+### Current Status Snapshot (2026-07-02)
 
 - Core addon scaffold is implemented and loadable via `SmartMark.toc`.
 - Core scrub-mark loop works (hold/toggle session, mouseover capture, temporary marks, deferred/realtime reassignment).
 - Clear-marks keybind exists with retry sweeps for delayed token availability.
-- Settings panel is functional for core toggles/modes/modifier keys.
+- Settings panel is functional for core toggles/modes/modifier keys, including auto-reset toggle.
 - Import/export module is implemented with slash commands and an in-game import/export window.
-- Remaining high-priority work: mob database curation, full mob editor CRUD UI, mark remapping UI, and assignment retry queue tied to `NAME_PLATE_UNIT_ADDED`.
+- Mark application retry queue implemented via `NAME_PLATE_UNIT_ADDED` — queued marks apply as units re-enter nameplate range.
+- Auto pack reset implemented: all tracked mobs dying fires `ResetSession` automatically.
+- F-key quick-assign bindings implemented (`Ctrl+Alt+F1`–`F8`) with configurable priority mapping.
+- Overwrite-existing-marks bug fixed: reassignment no longer force-resets manually placed marks.
+- Remaining high-priority work: mob database curation, full mob editor CRUD UI, mark remapping UI, F-key remapping dropdowns in Settings Panel.
 
 ### Milestone 1 — Skeleton & Core Loop
 
@@ -787,16 +791,16 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 - [x] `Core/PriorityEngine.lua` with heuristic + DB-based assignment
 - [x] Deferred reassignment on session end (keys released)
 - [x] GUID → unit token resolution via nameplates
-- [ ] Mark application retry queue for out-of-range units
-- [~] **Deliverable:** Mixed pack of Humanoids/Beasts/Demons auto-sorted into kill + CC marks (working baseline; retry queue still pending)
+- [x] Mark application retry queue for out-of-range units (`NAME_PLATE_UNIT_ADDED` + `PriorityEngine.pendingMarks`)
+- [x] **Deliverable:** Mixed pack of Humanoids/Beasts/Demons auto-sorted into kill + CC marks
 
 ### Milestone 3 — Configuration UI
 
-- [~] `UI/SettingsPanel.lua` — standalone frame, tabs, modifier key picker, mode toggles (single-page functional panel implemented; tabs still pending)
+- [~] `UI/SettingsPanel.lua` — standalone frame, modifier key picker, mode toggles, auto-reset toggle (functional; tabs and F-key remapping dropdowns still pending)
 - [ ] `UI/MobEditor.lua` — scrollable list + add/edit/delete + "Add from Target" shortcut
 - [ ] Mark order remapping UI
-- [ ] F-key quick-assign bindings (`Bindings.xml` + 8 global stubs in `SmartMark.lua`)
-- [ ] `fKeyPriorityMap` settings + 8-dropdown F-Key Quick Assign section in Settings Panel
+- [x] F-key quick-assign bindings (`Bindings.xml` + 8 global stubs in `SmartMark.lua` + `fKeyPriorityMap` defaults)
+- [ ] 8-dropdown F-Key Quick Assign section in Settings Panel
 - [ ] **Deliverable:** Fully configurable via in-game UI, no config file editing needed
 
 ### Milestone 4 — Import/Export
@@ -810,11 +814,11 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 
 - [ ] Populate initial mob database with TBC Classic dungeon mobs (based on your research)
 - [x] Session overlay HUD
-- [ ] `NAME_PLATE_UNIT_ADDED` retry for deferred mark failures
+- [x] `NAME_PLATE_UNIT_ADDED` retry for deferred mark failures
 - [x] Combat state handling (disable in combat option)
 - [x] `/sm status` command showing current session mobs and marks
-- [ ] Auto pack reset on all-mobs-dead (`COMBAT_LOG_EVENT_UNFILTERED` → `UNIT_DIED` tracking)
-- [ ] `autoResetOnPackDeath` and `autoResetMinMobs` settings + Settings Panel controls
+- [x] Auto pack reset on all-mobs-dead (`COMBAT_LOG_EVENT_UNFILTERED` → `UNIT_DIED` tracking)
+- [x] `autoResetOnPackDeath` and `autoResetMinMobs` settings + Settings Panel checkbox
 - [ ] **Deliverable:** Ready-to-use addon with practical dungeon data
 
 ---
