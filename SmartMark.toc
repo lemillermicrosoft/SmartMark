@@ -10,6 +10,8 @@ Bindings.xml
 
 SmartMark.lua
 
+Config\BuiltinMobDB.lua
+
 Config\Defaults.lua
 Config\Config.lua
 Config\ImportExport.lua

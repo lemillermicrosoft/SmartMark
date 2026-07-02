@@ -5,13 +5,13 @@ Priority assignments and notes are heuristic where direct comment research was n
 
 | Dungeon | Mobs Found |
 | --- | ---: |
-| Hellfire Ramparts | 13 |
+| Hellfire Ramparts | 12 |
 | The Blood Furnace | 17 |
 | The Slave Pens | 20 |
 | The Underbog | 19 |
 | Mana-Tombs | 14 |
 | Auchenai Crypts | 15 |
-| Old Hillsbrad Foothills | 0 |
+| Old Hillsbrad Foothills | 9 |
 | Sethekk Halls | 20 |
 | The Black Morass | 19 |
 | The Mechanar | 15 |
@@ -20,7 +20,7 @@ Priority assignments and notes are heuristic where direct comment research was n
 | Shadow Labyrinth | 22 |
 | The Botanica | 35 |
 | The Arcatraz | 35 |
-| Magisters' Terrace | 0 |
+| Magisters' Terrace | 15 |
 
 ```lua
 SmartMark_BuiltinDB = {
@@ -39,6 +39,13 @@ SmartMark_BuiltinDB = {
         priorityType = "kill2",
         zone         = "Hellfire Ramparts",
         notes        = "Ranged pressure. Pull with line of sight.",
+        source       = "builtin",
+    },
+    [17478] = {
+        name         = "Bleeding Hollow Scryer",
+        priorityType = "kill2",
+        zone         = "Hellfire Ramparts",
+        notes        = "",
         source       = "builtin",
     },
     [17517] = {
@@ -65,13 +72,6 @@ SmartMark_BuiltinDB = {
     [17281] = {
         name         = "Bonechewer Ripper",
         priorityType = "kill3",
-        zone         = "Hellfire Ramparts",
-        notes        = "",
-        source       = "builtin",
-    },
-    [17478] = {
-        name         = "Bleeding Hollow Scryer",
-        priorityType = "cc_sheep",
         zone         = "Hellfire Ramparts",
         notes        = "",
         source       = "builtin",
@@ -111,13 +111,6 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [17540] = {
-        name         = "Fiendish Hound",
-        priorityType = "cc_banish",
-        zone         = "Hellfire Ramparts",
-        notes        = "",
-        source       = "builtin",
-    },
     -- =========================================================
     -- The Blood Furnace
     -- =========================================================
@@ -133,6 +126,20 @@ SmartMark_BuiltinDB = {
         priorityType = "kill1",
         zone         = "The Blood Furnace",
         notes        = "Dangerous caster. Interrupt.",
+        source       = "builtin",
+    },
+    [17397] = {
+        name         = "Shadowmoon Adept",
+        priorityType = "kill2",
+        zone         = "The Blood Furnace",
+        notes        = "",
+        source       = "builtin",
+    },
+    [17653] = {
+        name         = "Shadowmoon Channeler",
+        priorityType = "kill2",
+        zone         = "The Blood Furnace",
+        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [17414] = {
@@ -196,20 +203,6 @@ SmartMark_BuiltinDB = {
         priorityType = "cc_sheep",
         zone         = "The Blood Furnace",
         notes        = "",
-        source       = "builtin",
-    },
-    [17397] = {
-        name         = "Shadowmoon Adept",
-        priorityType = "cc_sheep",
-        zone         = "The Blood Furnace",
-        notes        = "",
-        source       = "builtin",
-    },
-    [17653] = {
-        name         = "Shadowmoon Channeler",
-        priorityType = "cc_sheep",
-        zone         = "The Blood Furnace",
-        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [18894] = {
@@ -393,6 +386,13 @@ SmartMark_BuiltinDB = {
         notes        = "Healer. Interrupt major heals.",
         source       = "builtin",
     },
+    [17771] = {
+        name         = "Murkblood Oracle",
+        priorityType = "kill2",
+        zone         = "The Underbog",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
     [17727] = {
         name         = "Wrathfin Sentry",
         priorityType = "kill2",
@@ -433,13 +433,6 @@ SmartMark_BuiltinDB = {
         priorityType = "kill3",
         zone         = "The Underbog",
         notes        = "",
-        source       = "builtin",
-    },
-    [17771] = {
-        name         = "Murkblood Oracle",
-        priorityType = "cc_sheep",
-        zone         = "The Underbog",
-        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [17729] = {
@@ -536,6 +529,27 @@ SmartMark_BuiltinDB = {
         notes        = "Healer. Interrupt major heals.",
         source       = "builtin",
     },
+    [18313] = {
+        name         = "Ethereal Sorcerer",
+        priorityType = "kill2",
+        zone         = "Mana-Tombs",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [18312] = {
+        name         = "Ethereal Spellbinder",
+        priorityType = "kill2",
+        zone         = "Mana-Tombs",
+        notes        = "Dangerous caster. Interrupt.",
+        source       = "builtin",
+    },
+    [18315] = {
+        name         = "Ethereal Theurgist",
+        priorityType = "kill2",
+        zone         = "Mana-Tombs",
+        notes        = "Dangerous caster. Interrupt.",
+        source       = "builtin",
+    },
     [18430] = {
         name         = "Ethereal Apprentice",
         priorityType = "kill4",
@@ -562,27 +576,6 @@ SmartMark_BuiltinDB = {
         priorityType = "cc_sheep",
         zone         = "Mana-Tombs",
         notes        = "",
-        source       = "builtin",
-    },
-    [18313] = {
-        name         = "Ethereal Sorcerer",
-        priorityType = "cc_sheep",
-        zone         = "Mana-Tombs",
-        notes        = "Caster pressure. Interrupt if possible.",
-        source       = "builtin",
-    },
-    [18312] = {
-        name         = "Ethereal Spellbinder",
-        priorityType = "cc_sheep",
-        zone         = "Mana-Tombs",
-        notes        = "Dangerous caster. Interrupt.",
-        source       = "builtin",
-    },
-    [18315] = {
-        name         = "Ethereal Theurgist",
-        priorityType = "cc_sheep",
-        zone         = "Mana-Tombs",
-        notes        = "Dangerous caster. Interrupt.",
         source       = "builtin",
     },
     [19306] = {
@@ -729,10 +722,104 @@ SmartMark_BuiltinDB = {
         source       = "builtin",
     },
     -- =========================================================
+    -- Old Hillsbrad Foothills
+    -- =========================================================
+    [18934] = {
+        name         = "Durnholde Mage",
+        priorityType = "kill1",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Dangerous caster. Interrupt or sheep.",
+        source       = "builtin",
+    },
+    [17833] = {
+        name         = "Durnholde Warden",
+        priorityType = "kill1",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Heals, dispels, and fears. Hard stop target.",
+        source       = "builtin",
+    },
+    [18093] = {
+        name         = "Tarren Mill Protector",
+        priorityType = "kill1",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Paladin healer. Sheep or kill immediately.",
+        source       = "builtin",
+    },
+    [17820] = {
+        name         = "Durnholde Rifleman",
+        priorityType = "kill2",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Ranged pressure. Pull line of sight.",
+        source       = "builtin",
+    },
+    [17819] = {
+        name         = "Durnholde Sentry",
+        priorityType = "kill2",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Patrol pull. Pick it up before extra aggro.",
+        source       = "builtin",
+    },
+    [18094] = {
+        name         = "Tarren Mill Lookout",
+        priorityType = "kill2",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Escort-wave ranged support.",
+        source       = "builtin",
+    },
+    [17860] = {
+        name         = "Durnholde Veteran",
+        priorityType = "kill3",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Standard melee.",
+        source       = "builtin",
+    },
+    [23175] = {
+        name         = "Tarren Mill Guardsman",
+        priorityType = "kill3",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Standard escort trash.",
+        source       = "builtin",
+    },
+    [17840] = {
+        name         = "Durnholde Tracking Hound",
+        priorityType = "cc_trap",
+        zone         = "Old Hillsbrad Foothills",
+        notes        = "Beast control target.",
+        source       = "builtin",
+    },
+    -- =========================================================
     -- Sethekk Halls
     -- =========================================================
+    [18328] = {
+        name         = "Sethekk Oracle",
+        priorityType = "kill2",
+        zone         = "Sethekk Halls",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [18325] = {
+        name         = "Sethekk Prophet",
+        priorityType = "kill2",
+        zone         = "Sethekk Halls",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [18326] = {
+        name         = "Sethekk Shaman",
+        priorityType = "kill2",
+        zone         = "Sethekk Halls",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
     [18327] = {
         name         = "Time-Lost Controller",
+        priorityType = "kill2",
+        zone         = "Sethekk Halls",
+        notes        = "",
+        source       = "builtin",
+    },
+    [18319] = {
+        name         = "Time-Lost Scryer",
         priorityType = "kill2",
         zone         = "Sethekk Halls",
         notes        = "",
@@ -766,32 +853,11 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [18328] = {
-        name         = "Sethekk Oracle",
-        priorityType = "cc_sheep",
-        zone         = "Sethekk Halls",
-        notes        = "Caster pressure. Interrupt if possible.",
-        source       = "builtin",
-    },
-    [18325] = {
-        name         = "Sethekk Prophet",
-        priorityType = "cc_sheep",
-        zone         = "Sethekk Halls",
-        notes        = "Caster pressure. Interrupt if possible.",
-        source       = "builtin",
-    },
     [18322] = {
         name         = "Sethekk Ravenguard",
         priorityType = "cc_sheep",
         zone         = "Sethekk Halls",
         notes        = "",
-        source       = "builtin",
-    },
-    [18326] = {
-        name         = "Sethekk Shaman",
-        priorityType = "cc_sheep",
-        zone         = "Sethekk Halls",
-        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [18321] = {
@@ -860,13 +926,6 @@ SmartMark_BuiltinDB = {
     [19206] = {
         name         = "Syth Shadow Elemental",
         priorityType = "cc_banish",
-        zone         = "Sethekk Halls",
-        notes        = "",
-        source       = "builtin",
-    },
-    [18319] = {
-        name         = "Time-Lost Scryer",
-        priorityType = "cc_shackle",
         zone         = "Sethekk Halls",
         notes        = "",
         source       = "builtin",
@@ -1031,6 +1090,13 @@ SmartMark_BuiltinDB = {
         notes        = "Utility mob. Watch bombs or gadgets.",
         source       = "builtin",
     },
+    [19168] = {
+        name         = "Sunseeker Astromage",
+        priorityType = "kill2",
+        zone         = "The Mechanar",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
     [20988] = {
         name         = "Sunseeker Engineer",
         priorityType = "kill2",
@@ -1071,13 +1137,6 @@ SmartMark_BuiltinDB = {
         priorityType = "cc_sheep",
         zone         = "The Mechanar",
         notes        = "",
-        source       = "builtin",
-    },
-    [19168] = {
-        name         = "Sunseeker Astromage",
-        priorityType = "cc_sheep",
-        zone         = "The Mechanar",
-        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [20059] = {
@@ -1123,6 +1182,13 @@ SmartMark_BuiltinDB = {
         priorityType = "kill1",
         zone         = "The Shattered Halls",
         notes        = "Dangerous caster. Interrupt.",
+        source       = "builtin",
+    },
+    [16594] = {
+        name         = "Shadowmoon Acolyte",
+        priorityType = "kill2",
+        zone         = "The Shattered Halls",
+        notes        = "",
         source       = "builtin",
     },
     [17622] = {
@@ -1223,13 +1289,6 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [16594] = {
-        name         = "Shadowmoon Acolyte",
-        priorityType = "cc_sheep",
-        zone         = "The Shattered Halls",
-        notes        = "",
-        source       = "builtin",
-    },
     [17695] = {
         name         = "Shattered Hand Assassin",
         priorityType = "cc_sheep",
@@ -1317,6 +1376,20 @@ SmartMark_BuiltinDB = {
         notes        = "Utility mob. Watch bombs or gadgets.",
         source       = "builtin",
     },
+    [17803] = {
+        name         = "Coilfang Oracle",
+        priorityType = "kill2",
+        zone         = "The Steamvault",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [17722] = {
+        name         = "Coilfang Sorceress",
+        priorityType = "kill2",
+        zone         = "The Steamvault",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
     [17951] = {
         name         = "Steamrigger Mechanic",
         priorityType = "kill2",
@@ -1352,25 +1425,11 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [17803] = {
-        name         = "Coilfang Oracle",
-        priorityType = "cc_sheep",
-        zone         = "The Steamvault",
-        notes        = "Caster pressure. Interrupt if possible.",
-        source       = "builtin",
-    },
     [17801] = {
         name         = "Coilfang Siren",
         priorityType = "cc_sheep",
         zone         = "The Steamvault",
         notes        = "",
-        source       = "builtin",
-    },
-    [17722] = {
-        name         = "Coilfang Sorceress",
-        priorityType = "cc_sheep",
-        zone         = "The Steamvault",
-        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [17802] = {
@@ -1432,6 +1491,13 @@ SmartMark_BuiltinDB = {
         notes        = "Dangerous caster. Interrupt.",
         source       = "builtin",
     },
+    [18633] = {
+        name         = "Cabal Acolyte",
+        priorityType = "kill2",
+        zone         = "Shadow Labyrinth",
+        notes        = "",
+        source       = "builtin",
+    },
     [18632] = {
         name         = "Cabal Executioner",
         priorityType = "kill2",
@@ -1439,9 +1505,16 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [18633] = {
-        name         = "Cabal Acolyte",
-        priorityType = "cc_sheep",
+    [18639] = {
+        name         = "Cabal Spellbinder",
+        priorityType = "kill2",
+        zone         = "Shadow Labyrinth",
+        notes        = "Dangerous caster. Interrupt.",
+        source       = "builtin",
+    },
+    [19208] = {
+        name         = "Summoned Cabal Acolyte",
+        priorityType = "kill2",
         zone         = "Shadow Labyrinth",
         notes        = "",
         source       = "builtin",
@@ -1481,22 +1554,8 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [18639] = {
-        name         = "Cabal Spellbinder",
-        priorityType = "cc_sheep",
-        zone         = "Shadow Labyrinth",
-        notes        = "Dangerous caster. Interrupt.",
-        source       = "builtin",
-    },
     [18638] = {
         name         = "Cabal Zealot",
-        priorityType = "cc_sheep",
-        zone         = "Shadow Labyrinth",
-        notes        = "",
-        source       = "builtin",
-    },
-    [19208] = {
-        name         = "Summoned Cabal Acolyte",
         priorityType = "cc_sheep",
         zone         = "Shadow Labyrinth",
         notes        = "",
@@ -1575,6 +1634,27 @@ SmartMark_BuiltinDB = {
         notes        = "Ranged pressure. Pull with line of sight.",
         source       = "builtin",
     },
+    [19505] = {
+        name         = "Sunseeker Channeler",
+        priorityType = "kill2",
+        zone         = "The Botanica",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [18420] = {
+        name         = "Sunseeker Geomancer",
+        priorityType = "kill2",
+        zone         = "The Botanica",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [18421] = {
+        name         = "Sunseeker Researcher",
+        priorityType = "kill2",
+        zone         = "The Botanica",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
     [18405] = {
         name         = "Tempest-Forge Peacekeeper",
         priorityType = "kill3",
@@ -1631,13 +1711,6 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [19505] = {
-        name         = "Sunseeker Channeler",
-        priorityType = "cc_sheep",
-        zone         = "The Botanica",
-        notes        = "Caster pressure. Interrupt if possible.",
-        source       = "builtin",
-    },
     [19486] = {
         name         = "Sunseeker Chemist",
         priorityType = "cc_sheep",
@@ -1652,13 +1725,6 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [18420] = {
-        name         = "Sunseeker Geomancer",
-        priorityType = "cc_sheep",
-        zone         = "The Botanica",
-        notes        = "Caster pressure. Interrupt if possible.",
-        source       = "builtin",
-    },
     [19509] = {
         name         = "Sunseeker Harvester",
         priorityType = "cc_sheep",
@@ -1671,13 +1737,6 @@ SmartMark_BuiltinDB = {
         priorityType = "cc_sheep",
         zone         = "The Botanica",
         notes        = "",
-        source       = "builtin",
-    },
-    [18421] = {
-        name         = "Sunseeker Researcher",
-        priorityType = "cc_sheep",
-        zone         = "The Botanica",
-        notes        = "Caster pressure. Interrupt if possible.",
         source       = "builtin",
     },
     [18155] = {
@@ -1835,6 +1894,13 @@ SmartMark_BuiltinDB = {
         priorityType = "kill2",
         zone         = "The Arcatraz",
         notes        = "Ranged pressure. Pull with line of sight.",
+        source       = "builtin",
+    },
+    [20882] = {
+        name         = "Skulking Witch",
+        priorityType = "kill2",
+        zone         = "The Arcatraz",
+        notes        = "",
         source       = "builtin",
     },
     [21466] = {
@@ -2033,13 +2099,6 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
-    [20882] = {
-        name         = "Skulking Witch",
-        priorityType = "cc_banish",
-        zone         = "The Arcatraz",
-        notes        = "",
-        source       = "builtin",
-    },
     [20883] = {
         name         = "Spiteful Temptress",
         priorityType = "cc_banish",
@@ -2061,18 +2120,125 @@ SmartMark_BuiltinDB = {
         notes        = "",
         source       = "builtin",
     },
+    -- =========================================================
+    -- Magisters' Terrace
+    -- =========================================================
+    [24687] = {
+        name         = "Sunblade Physician",
+        priorityType = "kill1",
+        zone         = "Magisters' Terrace",
+        notes        = "Healer. Interrupt and kill fast.",
+        source       = "builtin",
+    },
+    [24686] = {
+        name         = "Sunblade Warlock",
+        priorityType = "kill1",
+        zone         = "Magisters' Terrace",
+        notes        = "Dangerous caster. Interrupt shadow casts.",
+        source       = "builtin",
+    },
+    [24696] = {
+        name         = "Coilskar Witch",
+        priorityType = "kill2",
+        zone         = "Magisters' Terrace",
+        notes        = "Caster pressure. Interrupt if possible.",
+        source       = "builtin",
+    },
+    [24683] = {
+        name         = "Sunblade Mage Guard",
+        priorityType = "kill2",
+        zone         = "Magisters' Terrace",
+        notes        = "High caster pressure.",
+        source       = "builtin",
+    },
+    [24685] = {
+        name         = "Sunblade Magister",
+        priorityType = "kill2",
+        zone         = "Magisters' Terrace",
+        notes        = "High caster pressure.",
+        source       = "builtin",
+    },
+    [24777] = {
+        name         = "Sunblade Sentinel",
+        priorityType = "kill2",
+        zone         = "Magisters' Terrace",
+        notes        = "Heavy trash mob. Burns more rep than most.",
+        source       = "builtin",
+    },
+    [24688] = {
+        name         = "Wretched Skulker",
+        priorityType = "kill2",
+        zone         = "Magisters' Terrace",
+        notes        = "Rogue-like opener threat.",
+        source       = "builtin",
+    },
+    [24698] = {
+        name         = "Ethereum Smuggler",
+        priorityType = "kill3",
+        zone         = "Magisters' Terrace",
+        notes        = "Mixed ranged pressure.",
+        source       = "builtin",
+    },
+    [24684] = {
+        name         = "Sunblade Blood Knight",
+        priorityType = "kill3",
+        zone         = "Magisters' Terrace",
+        notes        = "Standard melee.",
+        source       = "builtin",
+    },
+    [24762] = {
+        name         = "Sunblade Keeper",
+        priorityType = "kill3",
+        zone         = "Magisters' Terrace",
+        notes        = "Standard melee.",
+        source       = "builtin",
+    },
+    [24689] = {
+        name         = "Wretched Bruiser",
+        priorityType = "kill3",
+        zone         = "Magisters' Terrace",
+        notes        = "Standard melee.",
+        source       = "builtin",
+    },
+    [24690] = {
+        name         = "Wretched Husk",
+        priorityType = "kill4",
+        zone         = "Magisters' Terrace",
+        notes        = "Low-priority wretched add.",
+        source       = "builtin",
+    },
+    [24761] = {
+        name         = "Brightscale Wyrm",
+        priorityType = "cc_trap",
+        zone         = "Magisters' Terrace",
+        notes        = "Dragonkin CC target.",
+        source       = "builtin",
+    },
+    [24697] = {
+        name         = "Sister of Torment",
+        priorityType = "cc_banish",
+        zone         = "Magisters' Terrace",
+        notes        = "Prime banish target.",
+        source       = "builtin",
+    },
+    [24815] = {
+        name         = "Sunblade Imp",
+        priorityType = "skip",
+        zone         = "Magisters' Terrace",
+        notes        = "Low-health companion add.",
+        source       = "builtin",
+    },
 }
 ```
 
 ```text
-SMDB:1:17269,kill1,Bleeding Hollow Darkcaster,Hellfire Ramparts|17270,kill2,Bleeding Hollow Archer,Hellfire Ramparts|17517,kill2,Hellfire Sentry,Hellfire Ramparts|17271,kill3,Bonechewer Destroyer,Hellfire Ramparts|17264,kill3,Bonechewer Ravener,Hellfire Ramparts|17281,kill3,Bonechewer Ripper,Hellfire Ramparts|17478,cc_sheep,Bleeding Hollow Scryer,Hellfire Ramparts|17455,cc_sheep,Bonechewer Beastmaster,Hellfire Ramparts|17259,cc_sheep,Bonechewer Hungerer,Hellfire Ramparts|17309,cc_sheep,Hellfire Watcher,Hellfire Ramparts|17280,cc_trap,Shattered Hand Warhound,Hellfire Ramparts|17307,cc_trap,Vazruden the Herald,Hellfire Ramparts|17540,cc_banish,Fiendish Hound,Hellfire Ramparts|17395,kill1,Shadowmoon Summoner,The Blood Furnace|17371,kill1,Shadowmoon Warlock,The Blood Furnace|17414,kill2,Shadowmoon Technician,The Blood Furnace|17400,kill3,Felguard Annihilator,The Blood Furnace|17626,kill3,Laughing Skull Legionnaire,The Blood Furnace|17429,kill4,Fel Orc Neophyte,The Blood Furnace|17401,kill4,Felhound Manastalker,The Blood Furnace|17370,cc_sheep,Laughing Skull Enforcer,The Blood Furnace|17491,cc_sheep,Laughing Skull Rogue,The Blood Furnace|17624,cc_sheep,Laughing Skull Warden,The Blood Furnace|17398,cc_sheep,Nascent Fel Orc,The Blood Furnace|17397,cc_sheep,Shadowmoon Adept,The Blood Furnace|17653,cc_sheep,Shadowmoon Channeler,The Blood Furnace|18894,cc_banish,Felguard Brute,The Blood Furnace|17399,cc_banish,Seductress,The Blood Furnace|19016,skip,Hellfire Familiar,The Blood Furnace|17477,skip,Hellfire Imp,The Blood Furnace|21126,kill1,Coilfang Scale-Healer,The Slave Pens|17940,kill2,Coilfang Technician,The Slave Pens|17957,kill3,Coilfang Champion,The Slave Pens|17959,kill4,Coilfang Slavehandler,The Slave Pens|17963,kill4,Wastewalker Slave,The Slave Pens|17816,cc_sheep,Bogstrok,The Slave Pens|17962,cc_sheep,Coilfang Collaborator,The Slave Pens|17958,cc_sheep,Coilfang Defender,The Slave Pens|17961,cc_sheep,Coilfang Enchantress,The Slave Pens|17938,cc_sheep,Coilfang Observer,The Slave Pens|17960,cc_sheep,Coilfang Soothsayer,The Slave Pens|21127,cc_sheep,Coilfang Tempest,The Slave Pens|17817,cc_sheep,Greater Bogstrok,The Slave Pens|17964,cc_sheep,Wastewalker Worker,The Slave Pens|21128,cc_trap,Coilfang Ray,The Slave Pens|25740,cc_banish,Ahune,The Slave Pens|25756,cc_banish,Ahunite Coldwave,The Slave Pens|25757,cc_banish,Ahunite Frostwind,The Slave Pens|25755,cc_banish,Ahunite Hailstone,The Slave Pens|25865,cc_banish,Frozen Core,The Slave Pens|17730,kill1,Murkblood Healer,The Underbog|17727,kill2,Wrathfin Sentry,The Underbog|17723,kill3,Bog Giant,The Underbog|19632,kill3,Lykul Stinger,The Underbog|17732,kill3,Lykul Wasp,The Underbog|17734,kill3,Underbog Lord,The Underbog|17990,kill3,Underbog Mushroom,The Underbog|17771,cc_sheep,Murkblood Oracle,The Underbog|17729,cc_sheep,Murkblood Spearman,The Underbog|17728,cc_sheep,Murkblood Tribesman,The Underbog|17726,cc_sheep,Wrathfin Myrmidon,The Underbog|17735,cc_sheep,Wrathfin Warrior,The Underbog|17827,cc_trap,Claw,The Underbog|17731,cc_trap,Fen Ray,The Underbog|22299,cc_trap,Spore Strider,The Underbog|17724,cc_trap,Underbat,The Underbog|20465,cc_trap,Underbog Frenzy,The Underbog|17725,cc_banish,Underbog Lurker,The Underbog|17871,cc_banish,Underbog Shambler,The Underbog|18331,kill1,Ethereal Darkcaster,Mana-Tombs|18317,kill1,Ethereal Priest,Mana-Tombs|18430,kill4,Ethereal Apprentice,Mana-Tombs|18309,kill4,Ethereal Scavenger,Mana-Tombs|18314,kill4,Nexus Stalker,Mana-Tombs|18311,cc_sheep,Ethereal Crypt Raider,Mana-Tombs|18313,cc_sheep,Ethereal Sorcerer,Mana-Tombs|18312,cc_sheep,Ethereal Spellbinder,Mana-Tombs|18315,cc_sheep,Ethereal Theurgist,Mana-Tombs|19306,cc_trap,Mana Leech,Mana-Tombs|18429,cc_banish,Arcane Fiend,Mana-Tombs|18394,cc_banish,Ethereal Wraith,Mana-Tombs|19307,cc_banish,Nexus Terror,Mana-Tombs|18431,skip,Ethereal Beacon,Mana-Tombs|18493,kill1,Auchenai Soulpriest,Auchenai Crypts|18499,kill2,Unliving Sorcerer,Auchenai Crypts|18495,kill3,Auchenai Vindicator,Auchenai Crypts|18506,kill3,Raging Soul,Auchenai Crypts|18501,kill4,Unliving Stalker,Auchenai Crypts|18497,cc_sheep,Auchenai Monk,Auchenai Crypts|18702,cc_sheep,Auchenai Necromancer,Auchenai Crypts|18524,cc_shackle,Angered Skeleton,Auchenai Crypts|18478,cc_shackle,Avatar of the Martyred,Auchenai Crypts|18503,cc_shackle,Phantasmal Possessor,Auchenai Crypts|18521,cc_shackle,Raging Skeleton,Auchenai Crypts|18700,cc_shackle,Reanimated Bones,Auchenai Crypts|18441,cc_shackle,Stolen Soul,Auchenai Crypts|18500,cc_shackle,Unliving Cleric,Auchenai Crypts|18498,cc_shackle,Unliving Soldier,Auchenai Crypts|18327,kill2,Time-Lost Controller,Sethekk Halls|18320,kill2,Time-Lost Shadowmage,Sethekk Halls|21891,kill3,Avian Ripper,Sethekk Halls|18323,cc_sheep,Sethekk Guard,Sethekk Halls|18318,cc_sheep,Sethekk Initiate,Sethekk Halls|18328,cc_sheep,Sethekk Oracle,Sethekk Halls|18325,cc_sheep,Sethekk Prophet,Sethekk Halls|18322,cc_sheep,Sethekk Ravenguard,Sethekk Halls|18326,cc_sheep,Sethekk Shaman,Sethekk Halls|18321,cc_sheep,Sethekk Talon Lord,Sethekk Halls|19429,cc_trap,Avian Darkhawk,Sethekk Halls|21904,cc_trap,Avian Warhawk,Sethekk Halls|23132,cc_trap,Brood of Anzu,Sethekk Halls|19428,cc_trap,Cobalt Serpent,Sethekk Halls|18701,cc_banish,Dark Vortex,Sethekk Halls|19205,cc_banish,Syth Arcane Elemental,Sethekk Halls|19203,cc_banish,Syth Fire Elemental,Sethekk Halls|19204,cc_banish,Syth Frost Elemental,Sethekk Halls|19206,cc_banish,Syth Shadow Elemental,Sethekk Halls|18319,cc_shackle,Time-Lost Scryer,Sethekk Halls|17892,kill2,Infinite Chronomancer,The Black Morass|21136,kill2,Infinite Chronomancer,The Black Morass|18994,kill2,Infinite Executioner,The Black Morass|21138,kill2,Infinite Executioner,The Black Morass|21698,kill3,Infinite Timereaver,The Black Morass|17839,kill3,Rift Lord,The Black Morass|21140,kill3,Rift Lord,The Black Morass|17952,kill4,Darkwater Crocolisk,The Black Morass|21818,kill4,Infinite Whelp,The Black Morass|17023,cc_sheep,Shadow Council Enforcer,The Black Morass|18983,cc_trap,Blackfang Tarantula,The Black Morass|17835,cc_trap,Infinite Assassin,The Black Morass|21137,cc_trap,Infinite Assassin,The Black Morass|21697,cc_trap,Infinite Chrono-Lord,The Black Morass|18995,cc_trap,Infinite Vanquisher,The Black Morass|21139,cc_trap,Infinite Vanquisher,The Black Morass|21104,cc_trap,Rift Keeper,The Black Morass|21148,cc_trap,Rift Keeper,The Black Morass|18982,cc_trap,Sable Jaguar,The Black Morass|20990,kill1,Bloodwarder Physician,The Mechanar|19167,kill2,Bloodwarder Slayer,The Mechanar|19716,kill2,Mechanar Tinkerer,The Mechanar|20988,kill2,Sunseeker Engineer,The Mechanar|19231,kill3,Mechanar Crusher,The Mechanar|19713,kill3,Mechanar Wrecker,The Mechanar|19735,kill3,Tempest-Forge Destroyer,The Mechanar|19166,kill3,Tempest-Forge Patroller,The Mechanar|19510,cc_sheep,Bloodwarder Centurion,The Mechanar|19168,cc_sheep,Sunseeker Astromage,The Mechanar|20059,cc_sheep,Sunseeker Netherbinder,The Mechanar|20478,cc_banish,Arcane Servant,The Mechanar|19712,cc_banish,Mechanar Driller,The Mechanar|21062,cc_banish,Nether Wraith,The Mechanar|20481,cc_banish,Raging Flames,The Mechanar|18637,kill1,Cabal Shadow Priest,Shadow Labyrinth|18634,kill1,Cabal Summoner,Shadow Labyrinth|18640,kill1,Cabal Warlock,Shadow Labyrinth|17694,kill1,Shadowmoon Darkcaster,The Shattered Halls|20869,kill2,Arcatraz Sentinel,The Arcatraz|17994,kill2,Bloodwarder Falconer,The Botanica|18632,kill2,Cabal Executioner,Shadow Labyrinth|17721,kill2,Coilfang Engineer,The Steamvault|20896,kill2,Ethereum Slayer,The Arcatraz|20901,kill2,Sargeron Archer,The Arcatraz|17622,kill2,Sharpshooter Guard,The Shattered Halls|17427,kill2,Shattered Hand Archer,The Shattered Halls|17301,kill2,Shattered Hand Executioner,The Shattered Halls|16507,kill2,Shattered Hand Sentry,The Shattered Halls|16704,kill2,Shattered Hand Sharpshooter,The Shattered Halls|17951,kill2,Steamrigger Mechanic,The Steamvault|21694,kill3,Bog Overlord,The Steamvault|17356,kill3,Creeping Ooze,The Shattered Halls|17357,kill3,Creeping Oozeling,The Shattered Halls|21466,kill3,Harbinger Skyriss,The Arcatraz|21467,kill3,Harbinger Skyriss,The Arcatraz|20865,kill3,Protean Horror,The Arcatraz|20864,kill3,Protean Nightmare,The Arcatraz|21395,kill3,Protean Spawn,The Arcatraz|17623,kill3,Reaver Guard,The Shattered Halls|17671,kill3,Shattered Hand Champion,The Shattered Halls|16700,kill3,Shattered Hand Legionnaire,The Shattered Halls|16699,kill3,Shattered Hand Reaver,The Shattered Halls|21346,kill3,Sightless Eye,The Arcatraz|20866,kill3,Soul Devourer,The Arcatraz|18405,kill3,Tempest-Forge Peacekeeper,The Botanica|17578,kill3,Training Dummy,The Shattered Halls|18419,kill4,Bloodwarder Greenkeeper,The Botanica|18404,kill4,Bloodwarder Steward,The Botanica|17805,kill4,Coilfang Slavemaster,The Steamvault|20857,cc_sheep,Arcatraz Defender,The Arcatraz|20859,cc_sheep,Arcatraz Warder,The Arcatraz|19633,cc_sheep,Bloodwarder Mender,The Botanica|17993,cc_sheep,Bloodwarder Protector,The Botanica|18633,cc_sheep,Cabal Acolyte,Shadow Labyrinth|18636,cc_sheep,Cabal Assassin,Shadow Labyrinth|18631,cc_sheep,Cabal Cultist,Shadow Labyrinth|18635,cc_sheep,Cabal Deathsworn,Shadow Labyrinth|18830,cc_sheep,Cabal Fanatic,Shadow Labyrinth|18794,cc_sheep,Cabal Ritualist,Shadow Labyrinth|18639,cc_sheep,Cabal Spellbinder,Shadow Labyrinth|18638,cc_sheep,Cabal Zealot,Shadow Labyrinth|21338,cc_sheep,Coilfang Leper,The Steamvault|17800,cc_sheep,Coilfang Myrmidon,The Steamvault|17803,cc_sheep,Coilfang Oracle,The Steamvault|17801,cc_sheep,Coilfang Siren,The Steamvault|17722,cc_sheep,Coilfang Sorceress,The Steamvault|17802,cc_sheep,Coilfang Warrior,The Steamvault|21303,cc_sheep,Defender Corpse,The Arcatraz|21702,cc_sheep,Ethereum Life-Binder,The Arcatraz|20897,cc_sheep,Ethereum Wave-Caster,The Arcatraz|17083,cc_sheep,Fel Orc Convert,The Shattered Halls|17621,cc_sheep,Heathen Guard,The Shattered Halls|16594,cc_sheep,Shadowmoon Acolyte,The Shattered Halls|17695,cc_sheep,Shattered Hand Assassin,The Shattered Halls|17461,cc_sheep,Shattered Hand Blood Guard,The Shattered Halls|16593,cc_sheep,Shattered Hand Brawler,The Shattered Halls|17465,cc_sheep,Shattered Hand Centurion,The Shattered Halls|17464,cc_sheep,Shattered Hand Gladiator,The Shattered Halls|17420,cc_sheep,Shattered Hand Heathen,The Shattered Halls|17670,cc_sheep,Shattered Hand Houndmaster,The Shattered Halls|16523,cc_sheep,Shattered Hand Savage,The Shattered Halls|17693,cc_sheep,Shattered Hand Scout,The Shattered Halls|17462,cc_sheep,Shattered Hand Zealot,The Shattered Halls|20909,cc_sheep,Sulfuron Magma-Thrower,The Arcatraz|20083,cc_sheep,Summoned Bloodwarder Mender,The Botanica|20078,cc_sheep,Summoned Bloodwarder Reservist,The Botanica|19208,cc_sheep,Summoned Cabal Acolyte,Shadow Labyrinth|19209,cc_sheep,Summoned Cabal Deathsworn,Shadow Labyrinth|18422,cc_sheep,Sunseeker Botanist,The Botanica|19505,cc_sheep,Sunseeker Channeler,The Botanica|19486,cc_sheep,Sunseeker Chemist,The Botanica|19507,cc_sheep,Sunseeker Gene-Splicer,The Botanica|18420,cc_sheep,Sunseeker Geomancer,The Botanica|19509,cc_sheep,Sunseeker Harvester,The Botanica|19508,cc_sheep,Sunseeker Herbalist,The Botanica|18421,cc_sheep,Sunseeker Researcher,The Botanica|21304,cc_sheep,Warder Corpse,The Arcatraz|20911,cc_trap,Blackwing Drakonaar,The Arcatraz|18155,cc_trap,Bloodfalcon,The Botanica|22890,cc_trap,First Fragment Guardian,Shadow Labyrinth|19513,cc_trap,Mutate Fear-Shrieker,The Botanica|19598,cc_trap,Mutate Fleshlasher,The Botanica|25354,cc_trap,Mutate Fleshlasher,The Botanica|19865,cc_trap,Mutate Horror,The Botanica|20906,cc_trap,Phase-Hunter,The Arcatraz|17669,cc_trap,Rabid Warhound,The Shattered Halls|22891,cc_trap,Second Fragment Guardian,The Steamvault|22892,cc_trap,Third Fragment Guardian,The Arcatraz|20910,cc_trap,Twilight Drakonaar,The Arcatraz|20908,cc_banish,Akkiris Lightning-Waker,The Arcatraz|20905,cc_banish,Blazing Trickster,The Arcatraz|19962,cc_banish,Blue Seedling,The Botanica|17917,cc_banish,Coilfang Water Elemental,The Steamvault|20867,cc_banish,Death Watcher,The Arcatraz|20868,cc_banish,Entropic Eye,The Arcatraz|20880,cc_banish,Eredar Deathbringer,The Arcatraz|20879,cc_banish,Eredar Soul-Eater,The Arcatraz|18642,cc_banish,Fel Guardhound,Shadow Labyrinth|18796,cc_banish,Fel Overseer,Shadow Labyrinth|18587,cc_banish,Frayer,The Botanica|19953,cc_banish,Frayer Protector,The Botanica|19608,cc_banish,Frayer Wildling,The Botanica|20898,cc_banish,Gargantuan Abyssal,The Arcatraz|19557,cc_banish,Greater Frayer,The Botanica|19969,cc_banish,Green Seedling,The Botanica|18663,cc_banish,Maiden of Discipline,Shadow Labyrinth|18848,cc_banish,Malicious Instructor,Shadow Labyrinth|20875,cc_banish,Negaton Screamer,The Arcatraz|20873,cc_banish,Negaton Warp-Master,The Arcatraz|19511,cc_banish,Nethervine Inciter,The Botanica|19512,cc_banish,Nethervine Reaper,The Botanica|19843,cc_banish,Nethervine Trickster,The Botanica|19964,cc_banish,Red Seedling,The Botanica|19949,cc_banish,Sapling,The Botanica|20902,cc_banish,Sargeron Hellcaller,The Arcatraz|20882,cc_banish,Skulking Witch,The Arcatraz|20883,cc_banish,Spiteful Temptress,The Arcatraz|21696,cc_banish,Steam Surger,The Steamvault|19920,cc_banish,Thorn Flayer,The Botanica|19919,cc_banish,Thorn Lasher,The Botanica|21695,cc_banish,Tidal Surger,The Steamvault|20881,cc_banish,Unbound Devastator,The Arcatraz|20900,cc_banish,Unchained Doombringer,The Arcatraz|19226,cc_banish,Void Traveler,Shadow Labyrinth|19958,cc_banish,White Seedling,The Botanica|18797,cc_shackle,Tortured Skeleton,Shadow Labyrinth|18641,skip,Cabal Familiar,Shadow Labyrinth
+SMDB:1:17269,kill1,Bleeding Hollow Darkcaster,Hellfire Ramparts|17270,kill2,Bleeding Hollow Archer,Hellfire Ramparts|17478,kill2,Bleeding Hollow Scryer,Hellfire Ramparts|17517,kill2,Hellfire Sentry,Hellfire Ramparts|17271,kill3,Bonechewer Destroyer,Hellfire Ramparts|17264,kill3,Bonechewer Ravener,Hellfire Ramparts|17281,kill3,Bonechewer Ripper,Hellfire Ramparts|17455,cc_sheep,Bonechewer Beastmaster,Hellfire Ramparts|17259,cc_sheep,Bonechewer Hungerer,Hellfire Ramparts|17309,cc_sheep,Hellfire Watcher,Hellfire Ramparts|17280,cc_trap,Shattered Hand Warhound,Hellfire Ramparts|17307,cc_trap,Vazruden the Herald,Hellfire Ramparts|17395,kill1,Shadowmoon Summoner,The Blood Furnace|17371,kill1,Shadowmoon Warlock,The Blood Furnace|17397,kill2,Shadowmoon Adept,The Blood Furnace|17653,kill2,Shadowmoon Channeler,The Blood Furnace|17414,kill2,Shadowmoon Technician,The Blood Furnace|17400,kill3,Felguard Annihilator,The Blood Furnace|17626,kill3,Laughing Skull Legionnaire,The Blood Furnace|17429,kill4,Fel Orc Neophyte,The Blood Furnace|17401,kill4,Felhound Manastalker,The Blood Furnace|17370,cc_sheep,Laughing Skull Enforcer,The Blood Furnace|17491,cc_sheep,Laughing Skull Rogue,The Blood Furnace|17624,cc_sheep,Laughing Skull Warden,The Blood Furnace|17398,cc_sheep,Nascent Fel Orc,The Blood Furnace|18894,cc_banish,Felguard Brute,The Blood Furnace|17399,cc_banish,Seductress,The Blood Furnace|19016,skip,Hellfire Familiar,The Blood Furnace|17477,skip,Hellfire Imp,The Blood Furnace|21126,kill1,Coilfang Scale-Healer,The Slave Pens|17940,kill2,Coilfang Technician,The Slave Pens|17957,kill3,Coilfang Champion,The Slave Pens|17959,kill4,Coilfang Slavehandler,The Slave Pens|17963,kill4,Wastewalker Slave,The Slave Pens|17816,cc_sheep,Bogstrok,The Slave Pens|17962,cc_sheep,Coilfang Collaborator,The Slave Pens|17958,cc_sheep,Coilfang Defender,The Slave Pens|17961,cc_sheep,Coilfang Enchantress,The Slave Pens|17938,cc_sheep,Coilfang Observer,The Slave Pens|17960,cc_sheep,Coilfang Soothsayer,The Slave Pens|21127,cc_sheep,Coilfang Tempest,The Slave Pens|17817,cc_sheep,Greater Bogstrok,The Slave Pens|17964,cc_sheep,Wastewalker Worker,The Slave Pens|21128,cc_trap,Coilfang Ray,The Slave Pens|25740,cc_banish,Ahune,The Slave Pens|25756,cc_banish,Ahunite Coldwave,The Slave Pens|25757,cc_banish,Ahunite Frostwind,The Slave Pens|25755,cc_banish,Ahunite Hailstone,The Slave Pens|25865,cc_banish,Frozen Core,The Slave Pens|17730,kill1,Murkblood Healer,The Underbog|17771,kill2,Murkblood Oracle,The Underbog|17727,kill2,Wrathfin Sentry,The Underbog|17723,kill3,Bog Giant,The Underbog|19632,kill3,Lykul Stinger,The Underbog|17732,kill3,Lykul Wasp,The Underbog|17734,kill3,Underbog Lord,The Underbog|17990,kill3,Underbog Mushroom,The Underbog|17729,cc_sheep,Murkblood Spearman,The Underbog|17728,cc_sheep,Murkblood Tribesman,The Underbog|17726,cc_sheep,Wrathfin Myrmidon,The Underbog|17735,cc_sheep,Wrathfin Warrior,The Underbog|17827,cc_trap,Claw,The Underbog|17731,cc_trap,Fen Ray,The Underbog|22299,cc_trap,Spore Strider,The Underbog|17724,cc_trap,Underbat,The Underbog|20465,cc_trap,Underbog Frenzy,The Underbog|17725,cc_banish,Underbog Lurker,The Underbog|17871,cc_banish,Underbog Shambler,The Underbog|18331,kill1,Ethereal Darkcaster,Mana-Tombs|18317,kill1,Ethereal Priest,Mana-Tombs|18313,kill2,Ethereal Sorcerer,Mana-Tombs|18312,kill2,Ethereal Spellbinder,Mana-Tombs|18315,kill2,Ethereal Theurgist,Mana-Tombs|18430,kill4,Ethereal Apprentice,Mana-Tombs|18309,kill4,Ethereal Scavenger,Mana-Tombs|18314,kill4,Nexus Stalker,Mana-Tombs|18311,cc_sheep,Ethereal Crypt Raider,Mana-Tombs|19306,cc_trap,Mana Leech,Mana-Tombs|18429,cc_banish,Arcane Fiend,Mana-Tombs|18394,cc_banish,Ethereal Wraith,Mana-Tombs|19307,cc_banish,Nexus Terror,Mana-Tombs|18431,skip,Ethereal Beacon,Mana-Tombs|18493,kill1,Auchenai Soulpriest,Auchenai Crypts|18499,kill2,Unliving Sorcerer,Auchenai Crypts|18495,kill3,Auchenai Vindicator,Auchenai Crypts|18506,kill3,Raging Soul,Auchenai Crypts|18501,kill4,Unliving Stalker,Auchenai Crypts|18497,cc_sheep,Auchenai Monk,Auchenai Crypts|18702,cc_sheep,Auchenai Necromancer,Auchenai Crypts|18524,cc_shackle,Angered Skeleton,Auchenai Crypts|18478,cc_shackle,Avatar of the Martyred,Auchenai Crypts|18503,cc_shackle,Phantasmal Possessor,Auchenai Crypts|18521,cc_shackle,Raging Skeleton,Auchenai Crypts|18700,cc_shackle,Reanimated Bones,Auchenai Crypts|18441,cc_shackle,Stolen Soul,Auchenai Crypts|18500,cc_shackle,Unliving Cleric,Auchenai Crypts|18498,cc_shackle,Unliving Soldier,Auchenai Crypts|18934,kill1,Durnholde Mage,Old Hillsbrad Foothills|17833,kill1,Durnholde Warden,Old Hillsbrad Foothills|18093,kill1,Tarren Mill Protector,Old Hillsbrad Foothills|17820,kill2,Durnholde Rifleman,Old Hillsbrad Foothills|17819,kill2,Durnholde Sentry,Old Hillsbrad Foothills|18094,kill2,Tarren Mill Lookout,Old Hillsbrad Foothills|17860,kill3,Durnholde Veteran,Old Hillsbrad Foothills|23175,kill3,Tarren Mill Guardsman,Old Hillsbrad Foothills|17840,cc_trap,Durnholde Tracking Hound,Old Hillsbrad Foothills|18328,kill2,Sethekk Oracle,Sethekk Halls|18325,kill2,Sethekk Prophet,Sethekk Halls|18326,kill2,Sethekk Shaman,Sethekk Halls|18327,kill2,Time-Lost Controller,Sethekk Halls|18319,kill2,Time-Lost Scryer,Sethekk Halls|18320,kill2,Time-Lost Shadowmage,Sethekk Halls|21891,kill3,Avian Ripper,Sethekk Halls|18323,cc_sheep,Sethekk Guard,Sethekk Halls|18318,cc_sheep,Sethekk Initiate,Sethekk Halls|18322,cc_sheep,Sethekk Ravenguard,Sethekk Halls|18321,cc_sheep,Sethekk Talon Lord,Sethekk Halls|19429,cc_trap,Avian Darkhawk,Sethekk Halls|21904,cc_trap,Avian Warhawk,Sethekk Halls|23132,cc_trap,Brood of Anzu,Sethekk Halls|19428,cc_trap,Cobalt Serpent,Sethekk Halls|18701,cc_banish,Dark Vortex,Sethekk Halls|19205,cc_banish,Syth Arcane Elemental,Sethekk Halls|19203,cc_banish,Syth Fire Elemental,Sethekk Halls|19204,cc_banish,Syth Frost Elemental,Sethekk Halls|19206,cc_banish,Syth Shadow Elemental,Sethekk Halls|17892,kill2,Infinite Chronomancer,The Black Morass|21136,kill2,Infinite Chronomancer,The Black Morass|18994,kill2,Infinite Executioner,The Black Morass|21138,kill2,Infinite Executioner,The Black Morass|21698,kill3,Infinite Timereaver,The Black Morass|17839,kill3,Rift Lord,The Black Morass|21140,kill3,Rift Lord,The Black Morass|17952,kill4,Darkwater Crocolisk,The Black Morass|21818,kill4,Infinite Whelp,The Black Morass|17023,cc_sheep,Shadow Council Enforcer,The Black Morass|18983,cc_trap,Blackfang Tarantula,The Black Morass|17835,cc_trap,Infinite Assassin,The Black Morass|21137,cc_trap,Infinite Assassin,The Black Morass|21697,cc_trap,Infinite Chrono-Lord,The Black Morass|18995,cc_trap,Infinite Vanquisher,The Black Morass|21139,cc_trap,Infinite Vanquisher,The Black Morass|21104,cc_trap,Rift Keeper,The Black Morass|21148,cc_trap,Rift Keeper,The Black Morass|18982,cc_trap,Sable Jaguar,The Black Morass|20990,kill1,Bloodwarder Physician,The Mechanar|19167,kill2,Bloodwarder Slayer,The Mechanar|19716,kill2,Mechanar Tinkerer,The Mechanar|19168,kill2,Sunseeker Astromage,The Mechanar|20988,kill2,Sunseeker Engineer,The Mechanar|19231,kill3,Mechanar Crusher,The Mechanar|19713,kill3,Mechanar Wrecker,The Mechanar|19735,kill3,Tempest-Forge Destroyer,The Mechanar|19166,kill3,Tempest-Forge Patroller,The Mechanar|19510,cc_sheep,Bloodwarder Centurion,The Mechanar|20059,cc_sheep,Sunseeker Netherbinder,The Mechanar|20478,cc_banish,Arcane Servant,The Mechanar|19712,cc_banish,Mechanar Driller,The Mechanar|21062,cc_banish,Nether Wraith,The Mechanar|20481,cc_banish,Raging Flames,The Mechanar|18637,kill1,Cabal Shadow Priest,Shadow Labyrinth|18634,kill1,Cabal Summoner,Shadow Labyrinth|18640,kill1,Cabal Warlock,Shadow Labyrinth|17694,kill1,Shadowmoon Darkcaster,The Shattered Halls|24687,kill1,Sunblade Physician,Magisters' Terrace|24686,kill1,Sunblade Warlock,Magisters' Terrace|20869,kill2,Arcatraz Sentinel,The Arcatraz|17994,kill2,Bloodwarder Falconer,The Botanica|18633,kill2,Cabal Acolyte,Shadow Labyrinth|18632,kill2,Cabal Executioner,Shadow Labyrinth|18639,kill2,Cabal Spellbinder,Shadow Labyrinth|17721,kill2,Coilfang Engineer,The Steamvault|17803,kill2,Coilfang Oracle,The Steamvault|17722,kill2,Coilfang Sorceress,The Steamvault|24696,kill2,Coilskar Witch,Magisters' Terrace|20896,kill2,Ethereum Slayer,The Arcatraz|20901,kill2,Sargeron Archer,The Arcatraz|16594,kill2,Shadowmoon Acolyte,The Shattered Halls|17622,kill2,Sharpshooter Guard,The Shattered Halls|17427,kill2,Shattered Hand Archer,The Shattered Halls|17301,kill2,Shattered Hand Executioner,The Shattered Halls|16507,kill2,Shattered Hand Sentry,The Shattered Halls|16704,kill2,Shattered Hand Sharpshooter,The Shattered Halls|20882,kill2,Skulking Witch,The Arcatraz|17951,kill2,Steamrigger Mechanic,The Steamvault|19208,kill2,Summoned Cabal Acolyte,Shadow Labyrinth|24683,kill2,Sunblade Mage Guard,Magisters' Terrace|24685,kill2,Sunblade Magister,Magisters' Terrace|24777,kill2,Sunblade Sentinel,Magisters' Terrace|19505,kill2,Sunseeker Channeler,The Botanica|18420,kill2,Sunseeker Geomancer,The Botanica|18421,kill2,Sunseeker Researcher,The Botanica|24688,kill2,Wretched Skulker,Magisters' Terrace|21694,kill3,Bog Overlord,The Steamvault|17356,kill3,Creeping Ooze,The Shattered Halls|17357,kill3,Creeping Oozeling,The Shattered Halls|24698,kill3,Ethereum Smuggler,Magisters' Terrace|21466,kill3,Harbinger Skyriss,The Arcatraz|21467,kill3,Harbinger Skyriss,The Arcatraz|20865,kill3,Protean Horror,The Arcatraz|20864,kill3,Protean Nightmare,The Arcatraz|21395,kill3,Protean Spawn,The Arcatraz|17623,kill3,Reaver Guard,The Shattered Halls|17671,kill3,Shattered Hand Champion,The Shattered Halls|16700,kill3,Shattered Hand Legionnaire,The Shattered Halls|16699,kill3,Shattered Hand Reaver,The Shattered Halls|21346,kill3,Sightless Eye,The Arcatraz|20866,kill3,Soul Devourer,The Arcatraz|24684,kill3,Sunblade Blood Knight,Magisters' Terrace|24762,kill3,Sunblade Keeper,Magisters' Terrace|18405,kill3,Tempest-Forge Peacekeeper,The Botanica|17578,kill3,Training Dummy,The Shattered Halls|24689,kill3,Wretched Bruiser,Magisters' Terrace|18419,kill4,Bloodwarder Greenkeeper,The Botanica|18404,kill4,Bloodwarder Steward,The Botanica|17805,kill4,Coilfang Slavemaster,The Steamvault|24690,kill4,Wretched Husk,Magisters' Terrace|20857,cc_sheep,Arcatraz Defender,The Arcatraz|20859,cc_sheep,Arcatraz Warder,The Arcatraz|19633,cc_sheep,Bloodwarder Mender,The Botanica|17993,cc_sheep,Bloodwarder Protector,The Botanica|18636,cc_sheep,Cabal Assassin,Shadow Labyrinth|18631,cc_sheep,Cabal Cultist,Shadow Labyrinth|18635,cc_sheep,Cabal Deathsworn,Shadow Labyrinth|18830,cc_sheep,Cabal Fanatic,Shadow Labyrinth|18794,cc_sheep,Cabal Ritualist,Shadow Labyrinth|18638,cc_sheep,Cabal Zealot,Shadow Labyrinth|21338,cc_sheep,Coilfang Leper,The Steamvault|17800,cc_sheep,Coilfang Myrmidon,The Steamvault|17801,cc_sheep,Coilfang Siren,The Steamvault|17802,cc_sheep,Coilfang Warrior,The Steamvault|21303,cc_sheep,Defender Corpse,The Arcatraz|21702,cc_sheep,Ethereum Life-Binder,The Arcatraz|20897,cc_sheep,Ethereum Wave-Caster,The Arcatraz|17083,cc_sheep,Fel Orc Convert,The Shattered Halls|17621,cc_sheep,Heathen Guard,The Shattered Halls|17695,cc_sheep,Shattered Hand Assassin,The Shattered Halls|17461,cc_sheep,Shattered Hand Blood Guard,The Shattered Halls|16593,cc_sheep,Shattered Hand Brawler,The Shattered Halls|17465,cc_sheep,Shattered Hand Centurion,The Shattered Halls|17464,cc_sheep,Shattered Hand Gladiator,The Shattered Halls|17420,cc_sheep,Shattered Hand Heathen,The Shattered Halls|17670,cc_sheep,Shattered Hand Houndmaster,The Shattered Halls|16523,cc_sheep,Shattered Hand Savage,The Shattered Halls|17693,cc_sheep,Shattered Hand Scout,The Shattered Halls|17462,cc_sheep,Shattered Hand Zealot,The Shattered Halls|20909,cc_sheep,Sulfuron Magma-Thrower,The Arcatraz|20083,cc_sheep,Summoned Bloodwarder Mender,The Botanica|20078,cc_sheep,Summoned Bloodwarder Reservist,The Botanica|19209,cc_sheep,Summoned Cabal Deathsworn,Shadow Labyrinth|18422,cc_sheep,Sunseeker Botanist,The Botanica|19486,cc_sheep,Sunseeker Chemist,The Botanica|19507,cc_sheep,Sunseeker Gene-Splicer,The Botanica|19509,cc_sheep,Sunseeker Harvester,The Botanica|19508,cc_sheep,Sunseeker Herbalist,The Botanica|21304,cc_sheep,Warder Corpse,The Arcatraz|20911,cc_trap,Blackwing Drakonaar,The Arcatraz|18155,cc_trap,Bloodfalcon,The Botanica|24761,cc_trap,Brightscale Wyrm,Magisters' Terrace|22890,cc_trap,First Fragment Guardian,Shadow Labyrinth|19513,cc_trap,Mutate Fear-Shrieker,The Botanica|19598,cc_trap,Mutate Fleshlasher,The Botanica|25354,cc_trap,Mutate Fleshlasher,The Botanica|19865,cc_trap,Mutate Horror,The Botanica|20906,cc_trap,Phase-Hunter,The Arcatraz|17669,cc_trap,Rabid Warhound,The Shattered Halls|22891,cc_trap,Second Fragment Guardian,The Steamvault|22892,cc_trap,Third Fragment Guardian,The Arcatraz|20910,cc_trap,Twilight Drakonaar,The Arcatraz|20908,cc_banish,Akkiris Lightning-Waker,The Arcatraz|20905,cc_banish,Blazing Trickster,The Arcatraz|19962,cc_banish,Blue Seedling,The Botanica|17917,cc_banish,Coilfang Water Elemental,The Steamvault|20867,cc_banish,Death Watcher,The Arcatraz|20868,cc_banish,Entropic Eye,The Arcatraz|20880,cc_banish,Eredar Deathbringer,The Arcatraz|20879,cc_banish,Eredar Soul-Eater,The Arcatraz|18642,cc_banish,Fel Guardhound,Shadow Labyrinth|18796,cc_banish,Fel Overseer,Shadow Labyrinth|18587,cc_banish,Frayer,The Botanica|19953,cc_banish,Frayer Protector,The Botanica|19608,cc_banish,Frayer Wildling,The Botanica|20898,cc_banish,Gargantuan Abyssal,The Arcatraz|19557,cc_banish,Greater Frayer,The Botanica|19969,cc_banish,Green Seedling,The Botanica|18663,cc_banish,Maiden of Discipline,Shadow Labyrinth|18848,cc_banish,Malicious Instructor,Shadow Labyrinth|20875,cc_banish,Negaton Screamer,The Arcatraz|20873,cc_banish,Negaton Warp-Master,The Arcatraz|19511,cc_banish,Nethervine Inciter,The Botanica|19512,cc_banish,Nethervine Reaper,The Botanica|19843,cc_banish,Nethervine Trickster,The Botanica|19964,cc_banish,Red Seedling,The Botanica|19949,cc_banish,Sapling,The Botanica|20902,cc_banish,Sargeron Hellcaller,The Arcatraz|24697,cc_banish,Sister of Torment,Magisters' Terrace|20883,cc_banish,Spiteful Temptress,The Arcatraz|21696,cc_banish,Steam Surger,The Steamvault|19920,cc_banish,Thorn Flayer,The Botanica|19919,cc_banish,Thorn Lasher,The Botanica|21695,cc_banish,Tidal Surger,The Steamvault|20881,cc_banish,Unbound Devastator,The Arcatraz|20900,cc_banish,Unchained Doombringer,The Arcatraz|19226,cc_banish,Void Traveler,Shadow Labyrinth|19958,cc_banish,White Seedling,The Botanica|18797,cc_shackle,Tortured Skeleton,Shadow Labyrinth|18641,skip,Cabal Familiar,Shadow Labyrinth|24815,skip,Sunblade Imp,Magisters' Terrace
 ```
 
 ## Omitted
-- Old Hillsbrad Foothills: no hostile trash NPCs were exposed in the saved Wowhead page.
-- Magisters' Terrace: no hostile trash NPCs were exposed in the saved Wowhead page.
+- None
 
 ## General Notes
-- Old Hillsbrad Foothills and Magisters' Terrace need a second source because their saved Wowhead pages expose bosses only.
+- Old Hillsbrad Foothills and Magisters' Terrace were backfilled from secondary sources plus verified Wowhead NPC searches.
 - Some creature types were missing from Wowhead rows; those entries were classified with broader heuristics and should be reviewed manually.
 - Duplicate NPC IDs were kept only in the lowest-level dungeon listed in the task requirements.

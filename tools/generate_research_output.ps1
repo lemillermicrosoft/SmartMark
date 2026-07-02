@@ -4,6 +4,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $sourceDir = Join-Path $repoRoot '.tmp\wowhead'
 $outputPath = Join-Path $repoRoot 'RESEARCH_OUTPUT.md'
+$builtinOutputPath = Join-Path $repoRoot 'Config\BuiltinMobDB.lua'
 
 $zoneSpecs = @(
     [pscustomobject]@{ Id = 3562; Name = 'Hellfire Ramparts'; MinLevel = 60 },
@@ -49,6 +50,36 @@ $priorityOrder = @{
     cc_hibernate = 10
     skip = 11
 }
+
+$excludedNpcIds = @(17540)
+
+$manualEntries = @(
+    [pscustomobject]@{ NpcId = 17819; Name = 'Durnholde Sentry'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'Patrol pull. Pick it up before extra aggro.' },
+    [pscustomobject]@{ NpcId = 17820; Name = 'Durnholde Rifleman'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'Ranged pressure. Pull line of sight.' },
+    [pscustomobject]@{ NpcId = 17833; Name = 'Durnholde Warden'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill1'; Notes = 'Heals, dispels, and fears. Hard stop target.' },
+    [pscustomobject]@{ NpcId = 17840; Name = 'Durnholde Tracking Hound'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Beast'; PriorityType = 'cc_trap'; Notes = 'Beast control target.' },
+    [pscustomobject]@{ NpcId = 17860; Name = 'Durnholde Veteran'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill3'; Notes = 'Standard melee.' },
+    [pscustomobject]@{ NpcId = 18093; Name = 'Tarren Mill Protector'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill1'; Notes = 'Paladin healer. Sheep or kill immediately.' },
+    [pscustomobject]@{ NpcId = 18094; Name = 'Tarren Mill Lookout'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'Escort-wave ranged support.' },
+    [pscustomobject]@{ NpcId = 18934; Name = 'Durnholde Mage'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill1'; Notes = 'Dangerous caster. Interrupt or sheep.' },
+    [pscustomobject]@{ NpcId = 23175; Name = 'Tarren Mill Guardsman'; Zone = 'Old Hillsbrad Foothills'; ZoneId = 2367; MinLevel = 66; CreatureType = 'Humanoid'; PriorityType = 'kill3'; Notes = 'Standard escort trash.' },
+
+    [pscustomobject]@{ NpcId = 24687; Name = 'Sunblade Physician'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill1'; Notes = 'Healer. Interrupt and kill fast.' },
+    [pscustomobject]@{ NpcId = 24686; Name = 'Sunblade Warlock'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill1'; Notes = 'Dangerous caster. Interrupt shadow casts.' },
+    [pscustomobject]@{ NpcId = 24683; Name = 'Sunblade Mage Guard'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'High caster pressure.' },
+    [pscustomobject]@{ NpcId = 24685; Name = 'Sunblade Magister'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'High caster pressure.' },
+    [pscustomobject]@{ NpcId = 24696; Name = 'Coilskar Witch'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'Caster pressure. Interrupt if possible.' },
+    [pscustomobject]@{ NpcId = 24777; Name = 'Sunblade Sentinel'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'Heavy trash mob. Burns more rep than most.' },
+    [pscustomobject]@{ NpcId = 24684; Name = 'Sunblade Blood Knight'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill3'; Notes = 'Standard melee.' },
+    [pscustomobject]@{ NpcId = 24762; Name = 'Sunblade Keeper'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill3'; Notes = 'Standard melee.' },
+    [pscustomobject]@{ NpcId = 24698; Name = 'Ethereum Smuggler'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill3'; Notes = 'Mixed ranged pressure.' },
+    [pscustomobject]@{ NpcId = 24689; Name = 'Wretched Bruiser'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill3'; Notes = 'Standard melee.' },
+    [pscustomobject]@{ NpcId = 24688; Name = 'Wretched Skulker'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill2'; Notes = 'Rogue-like opener threat.' },
+    [pscustomobject]@{ NpcId = 24690; Name = 'Wretched Husk'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Humanoid'; PriorityType = 'kill4'; Notes = 'Low-priority wretched add.' },
+    [pscustomobject]@{ NpcId = 24761; Name = 'Brightscale Wyrm'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Dragonkin'; PriorityType = 'cc_trap'; Notes = 'Dragonkin CC target.' },
+    [pscustomobject]@{ NpcId = 24697; Name = 'Sister of Torment'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Demon'; PriorityType = 'cc_banish'; Notes = 'Prime banish target.' },
+    [pscustomobject]@{ NpcId = 24815; Name = 'Sunblade Imp'; Zone = "Magisters' Terrace"; ZoneId = 4131; MinLevel = 70; CreatureType = 'Demon'; PriorityType = 'skip'; Notes = 'Low-health companion add.' }
+)
 
 function Get-EmbeddedNpcRows {
     param(
@@ -176,16 +207,7 @@ function Get-PriorityType {
         return 'kill1'
     }
 
-    if ($Name -match 'Chronomancer|Shadowmage|Sorcerer|Sorceress|Spellbinder|Theurgist|Astromage|Geomancer|Oracle|Prophet|Shaman|Channeler|Adept|Acolyte|Researcher') {
-        if ($CreatureType -eq 'Humanoid') {
-            return 'cc_sheep'
-        }
-        if ($CreatureType -eq 'Undead') {
-            return 'kill2'
-        }
-        if ($CreatureType -eq 'Demon' -or $CreatureType -eq 'Elemental') {
-            return 'kill2'
-        }
+    if ($Name -match 'Chronomancer|Shadowmage|Sorcerer|Sorceress|Spellbinder|Theurgist|Astromage|Geomancer|Oracle|Prophet|Shaman|Channeler|Adept|Acolyte|Researcher|Scryer|Magister|Mage Guard|Mage|Witch') {
         return 'kill2'
     }
 
@@ -229,13 +251,20 @@ foreach ($zone in $zoneSpecs) {
     $htmlPath = Join-Path $sourceDir ("zone_{0}.html" -f $zone.Id)
     $rows = Get-EmbeddedNpcRows -HtmlPath $htmlPath -ZoneId $zone.Id
     $hostileRows = @($rows | Where-Object { Is-HostileTrash -Row $_ -ZoneId $zone.Id })
+    $manualZoneRows = @($manualEntries | Where-Object ZoneId -eq $zone.Id)
 
     if ($hostileRows.Count -eq 0) {
-        $omissions.Add("$($zone.Name): no hostile trash NPCs were exposed in the saved Wowhead page.")
-        continue
+        if ($manualZoneRows.Count -eq 0) {
+            $omissions.Add("$($zone.Name): no hostile trash NPCs were exposed in the saved Wowhead page.")
+            continue
+        }
     }
 
     foreach ($row in $hostileRows) {
+        if ($excludedNpcIds -contains [int]$row.id) {
+            continue
+        }
+
         $creatureType = ''
         if ($null -ne $row.type -and $typeMap.ContainsKey([int]$row.type)) {
             $creatureType = $typeMap[[int]$row.type]
@@ -254,6 +283,10 @@ foreach ($zone in $zoneSpecs) {
     }
 }
 
+foreach ($entry in $manualEntries) {
+    $records.Add($entry)
+}
+
 $deduped = $records |
     Sort-Object MinLevel, Zone, NpcId |
     Group-Object NpcId |
@@ -269,6 +302,10 @@ $summary = foreach ($zone in $zoneSpecs) {
 $luaLines = New-Object System.Collections.Generic.List[string]
 $luaLines.Add('```lua')
 $luaLines.Add('SmartMark_BuiltinDB = {')
+
+$builtinLines = New-Object System.Collections.Generic.List[string]
+$builtinLines.Add('local addon = SmartMark')
+$builtinLines.Add('addon.BuiltinMobDB = {')
 
 foreach ($zone in $zoneSpecs) {
     $zoneRecords = @($deduped | Where-Object Zone -eq $zone.Name | Sort-Object @{ Expression = { $priorityOrder[$_.PriorityType] } }, Name, NpcId)
@@ -291,11 +328,20 @@ foreach ($zone in $zoneSpecs) {
         $luaLines.Add(('        notes        = "{0}",' -f $notes))
         $luaLines.Add('        source       = "builtin",')
         $luaLines.Add('    },')
+
+        $builtinLines.Add(('    ["{0}"] = {{' -f $record.NpcId))
+        $builtinLines.Add(('        name = "{0}",' -f $name))
+        $builtinLines.Add(('        priorityType = "{0}",' -f $record.PriorityType))
+        $builtinLines.Add(('        notes = "{0}",' -f $notes))
+        $builtinLines.Add(('        zone = "{0}",' -f $zoneName))
+        $builtinLines.Add('        source = "builtin",')
+        $builtinLines.Add('    },')
     }
 }
 
 $luaLines.Add('}')
 $luaLines.Add('```')
+    $builtinLines.Add('}')
 
 $importEntries = $deduped |
     Sort-Object MinLevel, @{ Expression = { $priorityOrder[$_.PriorityType] } }, Name, NpcId |
@@ -336,9 +382,10 @@ if ($omissions.Count -eq 0) {
 }
 $outputLines.Add('')
 $outputLines.Add('## General Notes')
-$outputLines.Add('- Old Hillsbrad Foothills and Magisters'' Terrace need a second source because their saved Wowhead pages expose bosses only.')
+$outputLines.Add('- Old Hillsbrad Foothills and Magisters'' Terrace were backfilled from secondary sources plus verified Wowhead NPC searches.')
 $outputLines.Add('- Some creature types were missing from Wowhead rows; those entries were classified with broader heuristics and should be reviewed manually.')
 $outputLines.Add('- Duplicate NPC IDs were kept only in the lowest-level dungeon listed in the task requirements.')
 
 $outputLines | Set-Content -Path $outputPath
+$builtinLines | Set-Content -Path $builtinOutputPath
 Write-Host "Wrote $outputPath"

@@ -30,6 +30,14 @@ function Config:Initialize()
 
     applyDefaults(SmartMarkDB, addon.Defaults.DB)
     applyDefaults(SmartMarkCharDB, addon.Defaults.CharDB)
+
+    if type(addon.BuiltinMobDB) == "table" then
+        for npcID, entry in pairs(addon.BuiltinMobDB) do
+            if SmartMarkDB.mobs[npcID] == nil then
+                SmartMarkDB.mobs[npcID] = deepCopy(entry)
+            end
+        end
+    end
 end
 
 function Config:Get(path)
