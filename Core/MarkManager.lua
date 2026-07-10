@@ -387,7 +387,43 @@ function MarkManager:OnUnitDied(guid)
     local minMobs = addon.Config:Get("autoResetMinMobs") or 2
     if nonSkipTotal >= minMobs and self.session.deadCount >= nonSkipTotal then
         self:ResetSession(true)
-        addon.Print("Pack cleared \xe2\x80\x94 session reset.")
+        addon.Print("Pack cleared - session reset.")
+    end
+end
+
+function MarkManager:OnCombatEnded()
+    if not self.session or not self.session.active then
+        return
+    end
+
+    if not addon.Config:Get("autoResetOnPackDeath") then
+        return
+    end
+
+    local minMobs = addon.Config:Get("autoResetMinMobs") or 2
+    if #self.session.mobs < minMobs then
+        return
+    end
+
+    if self.session.deadCount <= 0 then
+        return
+    end
+
+    local aliveTracked = 0
+    if addon.PriorityEngine and addon.PriorityEngine.FindUnitByGUID then
+        for _, mob in ipairs(self.session.mobs) do
+            local unit = addon.PriorityEngine:FindUnitByGUID(mob.guid)
+            if unit and UnitExists(unit) and not UnitIsDead(unit) then
+                aliveTracked = aliveTracked + 1
+            end
+        end
+    end
+
+    if aliveTracked == 0 then
+        self:ResetSession(true)
+        if addon.Print then
+            addon.Print("Combat ended - session reset.")
+        end
     end
 end
 

@@ -4,6 +4,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")
 frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
@@ -39,8 +40,19 @@ frame:SetScript("OnEvent", function(_, event, ...)
     end
 
     if event == "PLAYER_REGEN_DISABLED" then
+        if addon.MarkManager and addon.Config:Get("reassignmentMode") == "deferred" and addon.MarkManager.session and addon.MarkManager.session.active then
+            addon.PriorityEngine:Reassign(addon.MarkManager.session)
+        end
+
         if addon.Config and addon.Config:Get("disableInCombat") and addon.MarkManager then
             addon.MarkManager:StopSession(true)
+        end
+        return
+    end
+
+    if event == "PLAYER_REGEN_ENABLED" then
+        if addon.MarkManager and addon.MarkManager.OnCombatEnded then
+            addon.MarkManager:OnCombatEnded()
         end
         return
     end

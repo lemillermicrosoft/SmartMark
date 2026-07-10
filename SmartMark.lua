@@ -22,14 +22,17 @@ addon.Print = printMsg
 
 function SmartMark_ClearAllMarks()
     if addon.MarkManager then
+        local canceledExtra = nil
         if addon.MarkManager:IsDeferredClearActive() then
-            local extra = addon.MarkManager:CancelDeferredClearRetry()
-            printMsg("Clear retry canceled (additional clears: " .. tostring(extra or 0) .. ")")
-            return
+            canceledExtra = addon.MarkManager:CancelDeferredClearRetry()
         end
 
         local cleared = addon.MarkManager:ResetSession(true) or 0
-        printMsg("Cleared marks: " .. tostring(cleared))
+        if canceledExtra ~= nil then
+            printMsg("Cleared marks: " .. tostring(cleared) .. " (retry restarted; prior extra clears: " .. tostring(canceledExtra or 0) .. ")")
+        else
+            printMsg("Cleared marks: " .. tostring(cleared))
+        end
     end
 end
 
