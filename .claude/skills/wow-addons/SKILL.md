@@ -51,20 +51,20 @@ MyAddon/
   - `## Version: <semver_like_value>`
 - Ensure any in-UI version text reads from the Lua version constant, not hardcoded text.
 
-## TalonTracker release flow (atomic)
+## SmartMark release flow (atomic)
 
 For this repository, bump version and package publish zip in the same workflow.
 
 1. Update version and interface metadata:
-   - `TalonTracker.toc`
+   - `SmartMark.toc`
      - `## Interface: ...`
      - `## Version: x.y.z`
    - `Core.lua`
      - `TT.VERSION = "x.y.z"`
 2. Build publish archive immediately after bump.
 3. Output archive path:
-   - `dist/TalonTracker-vx.y.z.zip`
-4. Zip root must be `TalonTracker/`.
+   - `dist/SmartMark-vx.y.z.zip`
+4. Zip root must be `SmartMark/`.
 5. Include runtime files listed in TOC plus `README.md` and `LICENSE`.
 6. Exclude development-only folders and files (for example `.git`, `.claude`, `.agent`, `screenshots`, `scripts`).
 7. Validate archive contents before completing the task.
