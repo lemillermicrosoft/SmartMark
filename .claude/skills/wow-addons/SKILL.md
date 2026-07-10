@@ -2,50 +2,77 @@
 
 ## Overview
 
-You are an expert World of Warcraft addon developer with deep experience across **Vanilla/Classic, TBC, Wrath, and Modern** clients. You write **idiomatic Lua 5.1**, understand the **WoW UI API**, and design addons that are:
+Use this skill for practical WoW addon work across Vanilla/Classic, TBC, Wrath, and Modern clients.
 
-- **Robust:** avoid taint, handle edge cases, and fail gracefully.
-- **Performant:** minimal allocations, no heavy work in combat or OnUpdate.
-- **Maintainable:** clear structure, consistent naming, and documented behavior.
-- **User‑friendly:** intuitive configuration, minimal spam, and safe defaults.
+Focus on:
 
-When the user asks about WoW addons, you give **practical, copy‑paste‑ready patterns** and explain *why* they work, not just *what* to type.
-
----
+- Safe UI/API usage and taint avoidance
+- Idiomatic Lua 5.1 patterns
+- Clear SavedVariables and event-driven architecture
+- Packaging and release hygiene for addon publishing
 
 ## When to use this skill
 
-Use this skill whenever the user:
+Use this skill when the user asks to:
 
-- Asks how to **create or modify a WoW addon**.
-- Wants examples of **Lua code using the WoW API**.
-- Needs help with **frames, events, SavedVariables, or slash commands**.
-- Asks about **XML vs Lua UI**, **taint issues**, or **performance problems**.
-- Wants **file structure guidance** or **best practices** for Classic/TBC/Modern.
+- Build or modify addon Lua/XML/TOC files
+- Debug addon runtime behavior, events, or frame updates
+- Improve addon performance or state management
+- Prepare release artifacts (version bump and publish zip)
 
-If the question is generic Lua (not WoW‑specific), you can still answer, but prefer **WoW‑relevant patterns** when possible.
+## General rules
 
----
-
-## General style and tone
-
-- **Be concrete:** Prefer small, focused examples over abstract theory.
-- **Explain context:** Briefly mention Classic/TBC/Modern differences when relevant.
-- **Be safe:** Avoid suggesting anything that risks tainting secure frames or breaking protected actions.
-- **Be honest:** If something is impossible in the WoW sandbox (e.g., HTTP requests, file I/O), say so clearly.
-
----
+- Prefer event-driven updates over heavy OnUpdate loops.
+- Keep frame and secure action handling taint-safe.
+- Use TOC as the source of truth for runtime load order.
+- Keep release changes atomic and reproducible.
 
 ## File structure conventions
 
-Recommend a simple, standard layout:
+Recommend a simple layout:
 
 ```text
 MyAddon/
   MyAddon.toc
-  MyAddon.lua
-  MyAddon.xml        (optional)
-  embeds.xml         (optional)
-  locale/
-    enUS.lua         (optional)
-  libs/              (optional)
+  Core.lua
+  Events.lua
+  UI/
+    MainFrame.lua
+  Data/
+  README.md
+  LICENSE
+```
+
+## TOC and versioning guidance
+
+- Keep addon runtime version in one Lua constant (for UI display) and keep it aligned with TOC metadata.
+- Prefer these fields in TOC:
+  - `## Interface: <client_interface_number>`
+  - `## Version: <semver_like_value>`
+- Ensure any in-UI version text reads from the Lua version constant, not hardcoded text.
+
+## TalonTracker release flow (atomic)
+
+For this repository, bump version and package publish zip in the same workflow.
+
+1. Update version and interface metadata:
+   - `TalonTracker.toc`
+     - `## Interface: ...`
+     - `## Version: x.y.z`
+   - `Core.lua`
+     - `TT.VERSION = "x.y.z"`
+2. Build publish archive immediately after bump.
+3. Output archive path:
+   - `dist/TalonTracker-vx.y.z.zip`
+4. Zip root must be `TalonTracker/`.
+5. Include runtime files listed in TOC plus `README.md` and `LICENSE`.
+6. Exclude development-only folders and files (for example `.git`, `.claude`, `.agent`, `screenshots`, `scripts`).
+7. Validate archive contents before completing the task.
+
+## Packaging checklist
+
+- TOC version and Lua version match exactly.
+- Interface number is current for target client flavor.
+- Archive name matches version.
+- Archive root folder is correct for addon installation.
+- No dev-only files included.
