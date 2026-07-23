@@ -11,7 +11,7 @@ Goal:
 - convert feedback into scoped implementation plans
 - communicate decisions back to players so they feel heard
 
-Primary channels for SmartMark:
+Primary channels for TalonTracker:
 
 - CurseForge comments
 - GitHub issues (if used)
@@ -109,7 +109,7 @@ Do not ship a feature plan without:
 - Over-communicate what changed and why.
 - Build trust by resolving known annoyances before adding flashy features.
 
-## SmartMark-specific focus areas
+## TalonTracker-specific focus areas
 
 Current high-value themes to monitor in comments:
 

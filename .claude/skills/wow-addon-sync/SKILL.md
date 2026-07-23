@@ -6,7 +6,7 @@ Use this skill when the user wants to copy the current repository addon files in
 
 Primary target:
 
-- C:\Program Files (x86)\World of Warcraft\_anniversary_\Interface\AddOns\SmartMark
+- C:\Program Files (x86)\World of Warcraft\_anniversary_\Interface\AddOns\TalonTracker
 
 This workflow mirrors the repository into the game addon folder while excluding development-only files and skill content.
 
@@ -15,14 +15,14 @@ This workflow mirrors the repository into the game addon folder while excluding 
 Use this skill when the user asks to:
 
 - sync or deploy current addon changes for in-game testing
-- update the local SmartMark addon folder from this repo
+- update the local TalonTracker addon folder from this repo
 - create repeatable test deployment commands
 
 ## Rules
 
 - Never copy .claude or any skill files/folders.
 - Never copy .git metadata.
-- Keep destination folder name SmartMark.
+- Keep destination folder name TalonTracker.
 - Prefer robocopy for fast incremental sync on Windows.
 - Run a dry-run first when possible.
 
@@ -31,8 +31,8 @@ Use this skill when the user asks to:
 From repository root:
 
 ```powershell
-$Source = "C:\Users\leroy\repos\SmartMark"
-$Dest   = "C:\Program Files (x86)\World of Warcraft\_anniversary_\Interface\AddOns\SmartMark"
+$Source = "C:\Users\leroy\repos\TalonTracker"
+$Dest   = "C:\Program Files (x86)\World of Warcraft\_anniversary_\Interface\AddOns\TalonTracker"
 
 # 1) Preview changes only (dry-run)
 robocopy $Source $Dest /MIR /L /NFL /NDL /NJH /NJS /NP `

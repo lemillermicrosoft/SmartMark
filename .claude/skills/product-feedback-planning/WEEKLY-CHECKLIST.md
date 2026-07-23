@@ -1,6 +1,6 @@
 # Weekly PM Checklist for Feedback-Driven Planning
 
-Use this as a fast weekly operating checklist for SmartMark.
+Use this as a fast weekly operating checklist for TalonTracker.
 
 ## 1) Collect
 
