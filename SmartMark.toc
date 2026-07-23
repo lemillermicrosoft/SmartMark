@@ -3,6 +3,7 @@
 ## Notes: Smart raid mark assignment for TBC Classic tanks
 ## Author: Leroy
 ## Version: 0.1.0-alpha
+## IconTexture: Interface\AddOns\SmartMark\Media\SmartMarkLogo.png
 ## SavedVariables: SmartMarkDB
 ## SavedVariablesPerCharacter: SmartMarkCharDB
 
