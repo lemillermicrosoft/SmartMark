@@ -10,6 +10,7 @@ local addon = SmartMark
 addon.modules = addon.modules or {}
 
 local validPriorityTypes = {
+    kill = true,
     kill1 = true,
     kill2 = true,
     kill3 = true,
@@ -22,6 +23,20 @@ local validPriorityTypes = {
     skip = true,
     auto = true,
 }
+
+local legacyKillRank = {
+    kill1 = 10,
+    kill2 = 20,
+    kill3 = 30,
+    kill4 = 40,
+}
+
+local function canonicalizePriorityType(priorityType)
+    if priorityType == "kill1" or priorityType == "kill2" or priorityType == "kill3" or priorityType == "kill4" then
+        return "kill", legacyKillRank[priorityType]
+    end
+    return priorityType, nil
+end
 
 local function getNpcIDFromUnit(unit)
     local guid = UnitGUID(unit)
@@ -46,12 +61,14 @@ local function setMobPriorityByUnit(unit, priorityType)
         return false, "Invalid priorityType"
     end
 
+    local normalizedPriority, defaultRank = canonicalizePriorityType(priorityType)
+
     local npcID = getNpcIDFromUnit(unit)
     if not npcID then
         return false, "No valid NPC under " .. unit
     end
 
-    if priorityType == "auto" then
+    if normalizedPriority == "auto" then
         addon.MobDatabase:Delete(npcID)
         return true, string.format("%s NPC %d set to auto (custom entry removed)", unit, npcID)
     end
@@ -62,14 +79,14 @@ local function setMobPriorityByUnit(unit, priorityType)
 
     addon.MobDatabase:Set(npcID, {
         name = existing and existing.name or name,
-        priorityType = priorityType,
+        priorityType = normalizedPriority,
         notes = existing and existing.notes or "",
         zone = existing and existing.zone or zone,
-        killRank = existing and existing.killRank or nil,
+        killRank = existing and existing.killRank or defaultRank,
         source = "user",
     })
 
-    return true, string.format("%s (NPC %d) -> %s", name, npcID, priorityType)
+    return true, string.format("%s (NPC %d) -> %s", name, npcID, normalizedPriority)
 end
 
 local function setMobPriorityByNpcID(npcID, priorityType)
@@ -81,12 +98,14 @@ local function setMobPriorityByNpcID(npcID, priorityType)
         return false, "Invalid priorityType"
     end
 
+    local normalizedPriority, defaultRank = canonicalizePriorityType(priorityType)
+
     local idNum = tonumber(npcID)
     if not idNum or idNum <= 0 then
         return false, "Invalid NPC ID"
     end
 
-    if priorityType == "auto" then
+    if normalizedPriority == "auto" then
         addon.MobDatabase:Delete(idNum)
         return true, string.format("NPC %d set to auto (custom entry removed)", idNum)
     end
@@ -94,14 +113,14 @@ local function setMobPriorityByNpcID(npcID, priorityType)
     local existing = addon.MobDatabase:Lookup(idNum)
     addon.MobDatabase:Set(idNum, {
         name = existing and existing.name or ("NPC " .. tostring(idNum)),
-        priorityType = priorityType,
+        priorityType = normalizedPriority,
         notes = existing and existing.notes or "",
         zone = existing and existing.zone or (GetRealZoneText() or ""),
-        killRank = existing and existing.killRank or nil,
+        killRank = existing and existing.killRank or defaultRank,
         source = "user",
     })
 
-    return true, string.format("NPC %d -> %s", idNum, priorityType)
+    return true, string.format("NPC %d -> %s", idNum, normalizedPriority)
 end
 
 local function normalizeRankToken(token)
@@ -308,7 +327,8 @@ local function handleSlashCommand(input)
 
         if mode == "" or mode == "help" then
             printMsg("Usage: /sm prio target <type> | /sm prio mouseover <type> | /sm prio npc <id> <type>")
-            printMsg("Types: kill1 kill2 kill3 kill4 cc_sheep cc_sap cc_banish cc_shackle cc_trap skip auto")
+            printMsg("Types: kill cc_sheep cc_sap cc_banish cc_shackle cc_trap skip auto")
+            printMsg("Legacy kill1-4 is supported and auto-converted to kill + default rank")
             return
         end
 

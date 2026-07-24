@@ -15,10 +15,7 @@ local state = {
 }
 
 local PRIORITY_OPTIONS = {
-    { label = "kill1", value = "kill1" },
-    { label = "kill2", value = "kill2" },
-    { label = "kill3", value = "kill3" },
-    { label = "kill4", value = "kill4" },
+    { label = "kill", value = "kill" },
     { label = "cc_sheep", value = "cc_sheep" },
     { label = "cc_sap", value = "cc_sap" },
     { label = "cc_banish", value = "cc_banish" },
@@ -29,10 +26,7 @@ local PRIORITY_OPTIONS = {
 }
 
 local VALID_PRIORITY = {
-    kill1 = true,
-    kill2 = true,
-    kill3 = true,
-    kill4 = true,
+    kill = true,
     cc_sheep = true,
     cc_sap = true,
     cc_banish = true,
@@ -270,17 +264,49 @@ local function createRow(parent, index)
     row:SetSize(640, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", 0, -((index - 1) * ROW_HEIGHT))
 
+    row.bg = row:CreateTexture(nil, "BACKGROUND")
+    row.bg:SetAllPoints(true)
+    if math.fmod(index, 2) == 0 then
+        row.bg:SetTexture(1, 1, 1, 0.06)
+    else
+        row.bg:SetTexture(0, 0, 0, 0.14)
+    end
+
+    row.sep1 = row:CreateTexture(nil, "BORDER")
+    row.sep1:SetTexture(1, 1, 1, 0.08)
+    row.sep1:SetPoint("TOPLEFT", 255, -2)
+    row.sep1:SetPoint("BOTTOMLEFT", 255, 2)
+    row.sep1:SetWidth(1)
+
+    row.sep2 = row:CreateTexture(nil, "BORDER")
+    row.sep2:SetTexture(1, 1, 1, 0.08)
+    row.sep2:SetPoint("TOPLEFT", 312, -2)
+    row.sep2:SetPoint("BOTTOMLEFT", 312, 2)
+    row.sep2:SetWidth(1)
+
+    row.sep3 = row:CreateTexture(nil, "BORDER")
+    row.sep3:SetTexture(1, 1, 1, 0.08)
+    row.sep3:SetPoint("TOPLEFT", 510, -2)
+    row.sep3:SetPoint("BOTTOMLEFT", 510, 2)
+    row.sep3:SetWidth(1)
+
+    row.bottomLine = row:CreateTexture(nil, "BORDER")
+    row.bottomLine:SetTexture(1, 1, 1, 0.10)
+    row.bottomLine:SetPoint("BOTTOMLEFT", 0, 0)
+    row.bottomLine:SetPoint("BOTTOMRIGHT", 0, 0)
+    row.bottomLine:SetHeight(1)
+
     row.nameText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.nameText:SetPoint("LEFT", 8, 0)
     row.nameText:SetJustifyH("LEFT")
     row.nameText:SetWidth(250)
 
     row.npcText = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    row.npcText:SetPoint("LEFT", 264, 0)
+    row.npcText:SetPoint("LEFT", 262, 0)
     row.npcText:SetJustifyH("LEFT")
-    row.npcText:SetWidth(70)
+    row.npcText:SetWidth(46)
 
-    row.priorityDropdown = createPriorityDropdown(row, 120, 320, 8, function(value)
+    row.priorityDropdown = createPriorityDropdown(row, 168, 314, 8, function(value)
         if not row.data then
             return
         end
@@ -292,7 +318,7 @@ local function createRow(parent, index)
 
     row.rankBox = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
     row.rankBox:SetSize(58, 20)
-    row.rankBox:SetPoint("LEFT", 516, 0)
+    row.rankBox:SetPoint("LEFT", 518, 0)
     row.rankBox:SetAutoFocus(false)
     row.rankBox:SetNumeric(true)
     row.rankBox:SetMaxLetters(3)
@@ -305,7 +331,7 @@ local function createRow(parent, index)
     end)
 
     local hint = row:CreateFontString(nil, "OVERLAY", "GameFontDisableTiny")
-    hint:SetPoint("LEFT", 584, 0)
+    hint:SetPoint("LEFT", 582, 0)
     hint:SetText("1=top")
 
     return row
@@ -377,6 +403,12 @@ local function createPanel()
     local headerRank = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     headerRank:SetPoint("TOPLEFT", 540, -126)
     headerRank:SetText("Kill Rank")
+
+    local headerLine = panel:CreateTexture(nil, "BORDER")
+    headerLine:SetTexture(1, 1, 1, 0.18)
+    headerLine:SetPoint("TOPLEFT", 24, -140)
+    headerLine:SetPoint("TOPRIGHT", -56, -140)
+    headerLine:SetHeight(1)
 
     local listFrame = CreateFrame("Frame", nil, panel)
     listFrame:SetSize(680, ROW_HEIGHT * VISIBLE_ROWS)

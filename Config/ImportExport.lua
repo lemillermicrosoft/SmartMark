@@ -5,6 +5,7 @@ local ImportExport = addon.ImportExport
 local PREFIX = "SMDB:1:"
 
 local validPriority = {
+    kill = true,
     kill1 = true,
     kill2 = true,
     kill3 = true,
@@ -15,7 +16,22 @@ local validPriority = {
     cc_shackle = true,
     cc_trap = true,
     skip = true,
+    auto = true,
 }
+
+local legacyKillRank = {
+    kill1 = 10,
+    kill2 = 20,
+    kill3 = 30,
+    kill4 = 40,
+}
+
+local function normalizePriority(priorityType)
+    if priorityType == "kill1" or priorityType == "kill2" or priorityType == "kill3" or priorityType == "kill4" then
+        return "kill", legacyKillRank[priorityType]
+    end
+    return priorityType, nil
+end
 
 function ImportExport:Export()
     local db = addon.Config:GetMobDB()
@@ -29,7 +45,7 @@ function ImportExport:Export()
 
         out[#out + 1] = table.concat({
             tostring(npcID),
-            tostring(entry.priorityType or "kill3"),
+            tostring(entry.priorityType or "kill"),
             name,
             zone,
         }, ",")
@@ -65,13 +81,15 @@ function ImportExport:Import(input, mode)
         local idNum = tonumber(npcID)
 
         if idNum and validPriority[priorityType] then
+            local normalizedPriority, defaultRank = normalizePriority(priorityType)
             local key = tostring(idNum)
             if mode == "merge" and db[key] then
                 skipped = skipped + 1
             else
                 db[key] = {
                     name = name or "",
-                    priorityType = priorityType,
+                    priorityType = normalizedPriority,
+                    killRank = defaultRank,
                     notes = "",
                     zone = zone or "",
                     source = "imported",

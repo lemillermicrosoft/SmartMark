@@ -3,6 +3,53 @@ addon.Config = addon.Config or {}
 
 local Config = addon.Config
 
+local legacyKillRank = {
+    kill1 = 10,
+    kill2 = 20,
+    kill3 = 30,
+    kill4 = 40,
+}
+
+local ccFallbackKillRank = {
+    cc_sheep = 30,
+    cc_sap = 30,
+    cc_trap = 30,
+    cc_banish = 35,
+    cc_shackle = 35,
+}
+
+local function normalizePriorityType(priorityType)
+    if priorityType == "kill1" or priorityType == "kill2" or priorityType == "kill3" or priorityType == "kill4" then
+        return "kill"
+    end
+    return priorityType
+end
+
+local function ensureMobRankingDefaults(db)
+    for _, entry in pairs(db or {}) do
+        if type(entry) == "table" then
+            local original = entry.priorityType
+            local normalized = normalizePriorityType(original)
+
+            if original ~= normalized then
+                entry.priorityType = normalized
+            end
+
+            if entry.killRank == nil then
+                if legacyKillRank[original] then
+                    entry.killRank = legacyKillRank[original]
+                elseif normalized == "kill" then
+                    entry.killRank = 30
+                elseif ccFallbackKillRank[normalized] then
+                    entry.killRank = ccFallbackKillRank[normalized]
+                elseif normalized == "auto" then
+                    entry.killRank = 60
+                end
+            end
+        end
+    end
+end
+
 local function deepCopy(source)
     if type(source) ~= "table" then
         return source
@@ -38,6 +85,8 @@ function Config:Initialize()
             end
         end
     end
+
+    ensureMobRankingDefaults(SmartMarkDB.mobs)
 end
 
 function Config:Get(path)

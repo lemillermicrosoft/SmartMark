@@ -6,6 +6,7 @@ local PriorityEngine = addon.PriorityEngine
 PriorityEngine.pendingMarks = {}
 
 local killWeights = {
+    kill = 2,
     kill1 = 1,
     kill2 = 2,
     kill3 = 3,
@@ -15,6 +16,7 @@ local killWeights = {
 }
 
 local defaultKillRankByPriority = {
+    kill = 30,
     kill1 = 10,
     kill2 = 20,
     kill3 = 30,
@@ -109,6 +111,10 @@ function PriorityEngine:Heuristic(mob)
 end
 
 function PriorityEngine:ResolveCCPriority(priorityType, availableCC)
+    if priorityType == "kill1" or priorityType == "kill2" or priorityType == "kill3" or priorityType == "kill4" then
+        return "kill"
+    end
+
     if not string.find(priorityType or "", "^cc_") then
         return priorityType
     end
@@ -117,13 +123,7 @@ function PriorityEngine:ResolveCCPriority(priorityType, availableCC)
         return priorityType
     end
 
-    for _, candidate in ipairs(ccFallbackOrder) do
-        if availableCC[candidate] then
-            return candidate
-        end
-    end
-
-    return "kill3"
+    return "kill"
 end
 
 function PriorityEngine:ResolveKillRank(mob, entry, originalPriority, resolvedPriority)
@@ -132,11 +132,15 @@ function PriorityEngine:ResolveKillRank(mob, entry, originalPriority, resolvedPr
         return customRank
     end
 
+    if originalPriority == "kill1" or originalPriority == "kill2" or originalPriority == "kill3" or originalPriority == "kill4" then
+        return defaultKillRankByPriority[originalPriority]
+    end
+
     if originalPriority and string.find(originalPriority, "^cc_") and string.find(resolvedPriority or "", "^kill") then
         return defaultKillRankByCC[originalPriority] or defaultKillRankByPriority.kill3
     end
 
-    if resolvedPriority == "kill1" or resolvedPriority == "kill2" or resolvedPriority == "kill3" or resolvedPriority == "kill4" then
+    if resolvedPriority == "kill" or resolvedPriority == "kill1" or resolvedPriority == "kill2" or resolvedPriority == "kill3" or resolvedPriority == "kill4" then
         return defaultKillRankByPriority[resolvedPriority]
     end
 
@@ -254,13 +258,18 @@ function PriorityEngine:Reassign(session)
     local ccList = {}
 
     local autoDetect = addon.Config:Get("autoDetectGroupCC")
-    local availableCC = autoDetect and self:BuildAvailableCC() or {
+    local availableCC
+    if (not IsInGroup()) or autoDetect then
+        availableCC = self:BuildAvailableCC()
+    else
+        availableCC = {
         cc_sheep = true,
         cc_sap = true,
         cc_banish = true,
         cc_shackle = true,
         cc_trap = true,
-    }
+        }
+    end
 
     for _, mob in ipairs(session.mobs) do
         local entry = addon.MobDatabase:Lookup(mob.npcID)
@@ -277,7 +286,7 @@ function PriorityEngine:Reassign(session)
             resolvedPriority = self:ResolveCCPriority(originalPriority, availableCC)
             mob.priorityType = resolvedPriority
 
-            if string.find(resolvedPriority, "^kill") or resolvedPriority == "auto" then
+            if resolvedPriority == "kill" or string.find(resolvedPriority, "^kill") or resolvedPriority == "auto" then
                 mob.killRank = self:ResolveKillRank(mob, entry, originalPriority, resolvedPriority)
                 table.insert(killList, mob)
             elseif string.find(resolvedPriority, "^cc_") then
