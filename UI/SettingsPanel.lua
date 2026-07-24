@@ -164,6 +164,16 @@ local function createPanel()
         end
     end)
 
+    local dungeonPriorityButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    dungeonPriorityButton:SetSize(140, 24)
+    dungeonPriorityButton:SetPoint("LEFT", importExportButton, "RIGHT", 8, 0)
+    dungeonPriorityButton:SetText("Dungeon Priorities")
+    dungeonPriorityButton:SetScript("OnClick", function()
+        if addon.UI and addon.UI.OpenDungeonPriorityPanel then
+            addon.UI:OpenDungeonPriorityPanel()
+        end
+    end)
+
     local resetButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     resetButton:SetSize(120, 24)
     resetButton:SetPoint("BOTTOMLEFT", 24, 18)

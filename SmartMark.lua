@@ -9,6 +9,166 @@ BINDING_NAME_SMARTMARK_TOGGLE_SESSION = "Toggle marking session"
 local addon = SmartMark
 addon.modules = addon.modules or {}
 
+local validPriorityTypes = {
+    kill1 = true,
+    kill2 = true,
+    kill3 = true,
+    kill4 = true,
+    cc_sheep = true,
+    cc_sap = true,
+    cc_banish = true,
+    cc_shackle = true,
+    cc_trap = true,
+    skip = true,
+    auto = true,
+}
+
+local function getNpcIDFromUnit(unit)
+    local guid = UnitGUID(unit)
+    if not guid then
+        return nil
+    end
+
+    local unitType, _, _, _, _, npcID = strsplit("-", guid)
+    if unitType == "Creature" or unitType == "Vehicle" then
+        return tonumber(npcID)
+    end
+
+    return nil
+end
+
+local function setMobPriorityByUnit(unit, priorityType)
+    if not addon.Config or not addon.MobDatabase then
+        return false, "Config or MobDatabase unavailable"
+    end
+
+    if not validPriorityTypes[priorityType] then
+        return false, "Invalid priorityType"
+    end
+
+    local npcID = getNpcIDFromUnit(unit)
+    if not npcID then
+        return false, "No valid NPC under " .. unit
+    end
+
+    if priorityType == "auto" then
+        addon.MobDatabase:Delete(npcID)
+        return true, string.format("%s NPC %d set to auto (custom entry removed)", unit, npcID)
+    end
+
+    local name = UnitName(unit) or ("NPC " .. tostring(npcID))
+    local zone = GetRealZoneText() or ""
+    local existing = addon.MobDatabase:Lookup(npcID)
+
+    addon.MobDatabase:Set(npcID, {
+        name = existing and existing.name or name,
+        priorityType = priorityType,
+        notes = existing and existing.notes or "",
+        zone = existing and existing.zone or zone,
+        killRank = existing and existing.killRank or nil,
+        source = "user",
+    })
+
+    return true, string.format("%s (NPC %d) -> %s", name, npcID, priorityType)
+end
+
+local function setMobPriorityByNpcID(npcID, priorityType)
+    if not addon.Config or not addon.MobDatabase then
+        return false, "Config or MobDatabase unavailable"
+    end
+
+    if not validPriorityTypes[priorityType] then
+        return false, "Invalid priorityType"
+    end
+
+    local idNum = tonumber(npcID)
+    if not idNum or idNum <= 0 then
+        return false, "Invalid NPC ID"
+    end
+
+    if priorityType == "auto" then
+        addon.MobDatabase:Delete(idNum)
+        return true, string.format("NPC %d set to auto (custom entry removed)", idNum)
+    end
+
+    local existing = addon.MobDatabase:Lookup(idNum)
+    addon.MobDatabase:Set(idNum, {
+        name = existing and existing.name or ("NPC " .. tostring(idNum)),
+        priorityType = priorityType,
+        notes = existing and existing.notes or "",
+        zone = existing and existing.zone or (GetRealZoneText() or ""),
+        killRank = existing and existing.killRank or nil,
+        source = "user",
+    })
+
+    return true, string.format("NPC %d -> %s", idNum, priorityType)
+end
+
+local function normalizeRankToken(token)
+    local lower = string.lower(token or "")
+    if lower == "clear" or lower == "auto" or lower == "none" then
+        return true, nil
+    end
+
+    local rank = tonumber(token)
+    if not rank then
+        return false, "Invalid rank"
+    end
+
+    rank = math.floor(rank)
+    if rank < 1 or rank > 999 then
+        return false, "Rank must be 1-999"
+    end
+
+    return true, rank
+end
+
+local function setMobRankByNpcID(npcID, rank)
+    if not addon.MobDatabase then
+        return false, "MobDatabase unavailable"
+    end
+
+    local idNum = tonumber(npcID)
+    if not idNum or idNum <= 0 then
+        return false, "Invalid NPC ID"
+    end
+
+    local existing = addon.MobDatabase:Lookup(idNum) or {
+        name = "NPC " .. tostring(idNum),
+        priorityType = "auto",
+        notes = "",
+        zone = GetRealZoneText() or "",
+        source = "user",
+    }
+
+    existing.killRank = rank
+    existing.source = "user"
+    addon.MobDatabase:Set(idNum, existing)
+
+    if rank then
+        return true, string.format("NPC %d kill rank -> %d", idNum, rank)
+    end
+    return true, string.format("NPC %d kill rank cleared", idNum)
+end
+
+local function setMobRankByUnit(unit, rank)
+    local npcID = getNpcIDFromUnit(unit)
+    if not npcID then
+        return false, "No valid NPC under " .. unit
+    end
+
+    local ok, msg = setMobRankByNpcID(npcID, rank)
+    if not ok then
+        return false, msg
+    end
+
+    local name = UnitName(unit) or ("NPC " .. tostring(npcID))
+    if rank then
+        return true, string.format("%s (NPC %d) kill rank -> %d", name, npcID, rank)
+    end
+    return true, string.format("%s (NPC %d) kill rank cleared", name, npcID)
+end
+
 local function ensureSavedVariables()
     SmartMarkDB = SmartMarkDB or {}
     SmartMarkCharDB = SmartMarkCharDB or {}
@@ -69,7 +229,116 @@ local function handleSlashCommand(input)
     rest = rest or ""
 
     if cmd == "" or cmd == "help" then
-        printMsg("Commands: /sm start, /sm stop, /sm reset, /sm status, /sm config, /sm ie, /sm export, /sm import")
+        printMsg("Commands: /sm start, /sm stop, /sm reset, /sm status, /sm config, /sm dungeon, /sm ie, /sm export, /sm import, /sm prio, /sm rank")
+        return
+    end
+
+    if cmd == "dungeon" or cmd == "dungeons" then
+        if addon.UI and addon.UI.OpenDungeonPriorityPanel then
+            local ok, shownOrErr = pcall(function()
+                return addon.UI:OpenDungeonPriorityPanel()
+            end)
+
+            if not ok then
+                printMsg("Dungeon priorities UI error: " .. tostring(shownOrErr))
+            elseif shownOrErr then
+                printMsg("Dungeon priorities opened")
+            else
+                printMsg("Dungeon priorities closed")
+            end
+        else
+            printMsg("Dungeon priorities UI not available")
+        end
+        return
+    end
+
+    if cmd == "rank" then
+        local mode, a, b = string.match(rest, "^(%S+)%s*(%S*)%s*(.-)%s*$")
+        mode = string.lower(mode or "")
+
+        if mode == "" or mode == "help" then
+            printMsg("Usage: /sm rank target <n|clear> | /sm rank mouseover <n|clear> | /sm rank npc <id> <n|clear>")
+            printMsg("Lower rank = higher kill priority when mob is in kill bucket")
+            return
+        end
+
+        if mode == "target" or mode == "mouseover" then
+            local okRank, rankOrErr = normalizeRankToken(a)
+            if not okRank then
+                printMsg("Rank update failed: " .. tostring(rankOrErr))
+                return
+            end
+
+            local ok, message = setMobRankByUnit(mode, rankOrErr)
+            if ok then
+                printMsg(message)
+                if addon.MarkManager and addon.Config:Get("reassignmentMode") == "realtime" and addon.MarkManager.session and addon.MarkManager.session.active then
+                    addon.PriorityEngine:Reassign(addon.MarkManager.session)
+                end
+            else
+                printMsg("Rank update failed: " .. tostring(message))
+            end
+            return
+        end
+
+        if mode == "npc" then
+            local npcID = a
+            local okRank, rankOrErr = normalizeRankToken(b)
+            if not okRank then
+                printMsg("Rank update failed: " .. tostring(rankOrErr))
+                return
+            end
+
+            local ok, message = setMobRankByNpcID(npcID, rankOrErr)
+            if ok then
+                printMsg(message)
+            else
+                printMsg("Rank update failed: " .. tostring(message))
+            end
+            return
+        end
+
+        printMsg("Unknown rank mode. Use: target, mouseover, or npc")
+        return
+    end
+
+    if cmd == "prio" or cmd == "priority" then
+        local mode, a, b = string.match(rest, "^(%S+)%s*(%S*)%s*(.-)%s*$")
+        mode = string.lower(mode or "")
+
+        if mode == "" or mode == "help" then
+            printMsg("Usage: /sm prio target <type> | /sm prio mouseover <type> | /sm prio npc <id> <type>")
+            printMsg("Types: kill1 kill2 kill3 kill4 cc_sheep cc_sap cc_banish cc_shackle cc_trap skip auto")
+            return
+        end
+
+        if mode == "target" or mode == "mouseover" then
+            local priorityType = string.lower(a or "")
+            local ok, message = setMobPriorityByUnit(mode, priorityType)
+            if ok then
+                printMsg(message)
+                if addon.MarkManager and addon.Config:Get("reassignmentMode") == "realtime" and addon.MarkManager.session and addon.MarkManager.session.active then
+                    addon.PriorityEngine:Reassign(addon.MarkManager.session)
+                end
+            else
+                printMsg("Priority update failed: " .. tostring(message))
+            end
+            return
+        end
+
+        if mode == "npc" then
+            local npcID = a
+            local priorityType = string.lower(b or "")
+            local ok, message = setMobPriorityByNpcID(npcID, priorityType)
+            if ok then
+                printMsg(message)
+            else
+                printMsg("Priority update failed: " .. tostring(message))
+            end
+            return
+        end
+
+        printMsg("Unknown prio mode. Use: target, mouseover, or npc")
         return
     end
 

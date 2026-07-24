@@ -23,5 +23,6 @@ Core\MarkManager.lua
 Core\EventHandler.lua
 
 UI\SettingsPanel.lua
+UI\DungeonPriorityPanel.lua
 UI\MobEditor.lua
 UI\SessionOverlay.lua

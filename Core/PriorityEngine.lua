@@ -14,6 +14,23 @@ local killWeights = {
     auto = 6,
 }
 
+local defaultKillRankByPriority = {
+    kill1 = 10,
+    kill2 = 20,
+    kill3 = 30,
+    kill4 = 40,
+    auto_elite = 50,
+    auto = 60,
+}
+
+local defaultKillRankByCC = {
+    cc_sheep = 30,
+    cc_sap = 30,
+    cc_banish = 35,
+    cc_shackle = 35,
+    cc_trap = 30,
+}
+
 local ccFallbackOrder = { "cc_sheep", "cc_sap", "cc_banish", "cc_shackle", "cc_trap" }
 
 local function isLeaderOrAssist()
@@ -109,6 +126,30 @@ function PriorityEngine:ResolveCCPriority(priorityType, availableCC)
     return "kill3"
 end
 
+function PriorityEngine:ResolveKillRank(mob, entry, originalPriority, resolvedPriority)
+    local customRank = entry and tonumber(entry.killRank)
+    if customRank then
+        return customRank
+    end
+
+    if originalPriority and string.find(originalPriority, "^cc_") and string.find(resolvedPriority or "", "^kill") then
+        return defaultKillRankByCC[originalPriority] or defaultKillRankByPriority.kill3
+    end
+
+    if resolvedPriority == "kill1" or resolvedPriority == "kill2" or resolvedPriority == "kill3" or resolvedPriority == "kill4" then
+        return defaultKillRankByPriority[resolvedPriority]
+    end
+
+    if resolvedPriority == "auto" then
+        if mob.classification == "elite" or mob.classification == "rareelite" then
+            return defaultKillRankByPriority.auto_elite
+        end
+        return defaultKillRankByPriority.auto
+    end
+
+    return 999
+end
+
 function PriorityEngine:FindUnitByGUID(guid)
     for i = 1, 40 do
         local unit = "nameplate" .. i
@@ -134,16 +175,26 @@ function PriorityEngine:ApplyMarks(session)
     end
 
     local overwrite = addon.Config:Get("overwriteExistingMarks")
+    session.appliedMarks = session.appliedMarks or {}
 
     for guid, mark in pairs(session.marks) do
         local unit = self:FindUnitByGUID(guid)
         if unit and mark then
             local current = GetRaidTargetIndex(unit)
             if (not overwrite) and current and current > 0 and current ~= mark then
-                -- Respect manual or pre-existing marks unless overwrite is explicitly enabled.
-                session.marks[guid] = current
+                local addonApplied = session.appliedMarks[guid]
+                if addonApplied and addonApplied == current then
+                    SetRaidTarget(unit, mark)
+                    session.appliedMarks[guid] = mark
+                else
+                    -- Respect manual or pre-existing marks unless overwrite is explicitly enabled.
+                    session.marks[guid] = current
+                end
             elseif current ~= mark then
                 SetRaidTarget(unit, mark)
+                session.appliedMarks[guid] = mark
+            else
+                session.appliedMarks[guid] = mark
             end
         elseif mark then
             -- Unit not currently in range; queue for retry when its nameplate appears.
@@ -213,27 +264,36 @@ function PriorityEngine:Reassign(session)
 
     for _, mob in ipairs(session.mobs) do
         local entry = addon.MobDatabase:Lookup(mob.npcID)
+        local originalPriority
         local resolvedPriority
 
         if entry and entry.priorityType then
-            resolvedPriority = entry.priorityType
+            originalPriority = entry.priorityType
         else
-            resolvedPriority = self:Heuristic(mob)
+            originalPriority = self:Heuristic(mob)
         end
 
-        if resolvedPriority ~= "skip" then
-            resolvedPriority = self:ResolveCCPriority(resolvedPriority, availableCC)
+        if originalPriority ~= "skip" then
+            resolvedPriority = self:ResolveCCPriority(originalPriority, availableCC)
             mob.priorityType = resolvedPriority
 
             if string.find(resolvedPriority, "^kill") or resolvedPriority == "auto" then
+                mob.killRank = self:ResolveKillRank(mob, entry, originalPriority, resolvedPriority)
                 table.insert(killList, mob)
             elseif string.find(resolvedPriority, "^cc_") then
+                mob.killRank = nil
                 table.insert(ccList, mob)
             end
         end
     end
 
     table.sort(killList, function(a, b)
+        local ra = tonumber(a.killRank) or 999
+        local rb = tonumber(b.killRank) or 999
+        if ra ~= rb then
+            return ra < rb
+        end
+
         local wa = killWeights[a.priorityType] or 99
         local wb = killWeights[b.priorityType] or 99
         if wa ~= wb then

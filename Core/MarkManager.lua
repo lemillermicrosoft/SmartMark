@@ -71,6 +71,7 @@ function MarkManager:Initialize()
         mobs = {},
         guidIndex = {},
         marks = {},
+        appliedMarks = {},
         nextKillIndex = 1,
         deadCount = 0,
     }
@@ -237,6 +238,7 @@ function MarkManager:ResetSession(clearMarks)
     self.session.mobs = {}
     self.session.guidIndex = {}
     self.session.marks = {}
+    self.session.appliedMarks = {}
     self.session.nextKillIndex = 1
     self.session.deadCount = 0
 
@@ -286,6 +288,7 @@ function MarkManager:AssignTemporaryMark(mobInfo)
         if addon.Config:Get("overwriteExistingMarks") or not current then
             SetRaidTarget(unit, mark)
             self.session.marks[mobInfo.guid] = mark
+            self.session.appliedMarks[mobInfo.guid] = mark
         end
     end
 
