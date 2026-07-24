@@ -175,6 +175,25 @@ function PriorityEngine:RetryPendingMark(unit)
     self.pendingMarks[guid] = nil
 end
 
+function PriorityEngine:RetryPendingMarksSweep()
+    if not self.pendingMarks then
+        return
+    end
+
+    for guid, mark in pairs(self.pendingMarks) do
+        if mark then
+            local unit = self:FindUnitByGUID(guid)
+            if unit and UnitExists(unit) then
+                local current = GetRaidTargetIndex(unit)
+                if current ~= mark then
+                    SetRaidTarget(unit, mark)
+                end
+                self.pendingMarks[guid] = nil
+            end
+        end
+    end
+end
+
 function PriorityEngine:ClearPendingMarks()
     self.pendingMarks = {}
 end

@@ -21,6 +21,10 @@ frame:SetScript("OnUpdate", function(_, elapsed)
         addon.MarkManager:UpdateHoldState()
         addon.MarkManager:ProcessDeferredClear()
     end
+
+    if addon.PriorityEngine and addon.PriorityEngine.RetryPendingMarksSweep then
+        addon.PriorityEngine:RetryPendingMarksSweep()
+    end
 end)
 
 frame:SetScript("OnEvent", function(_, event, ...)

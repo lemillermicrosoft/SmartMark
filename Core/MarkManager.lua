@@ -410,16 +410,25 @@ function MarkManager:OnCombatEnded()
     end
 
     local aliveTracked = 0
+    local unresolvedTracked = 0
     if addon.PriorityEngine and addon.PriorityEngine.FindUnitByGUID then
         for _, mob in ipairs(self.session.mobs) do
             local unit = addon.PriorityEngine:FindUnitByGUID(mob.guid)
-            if unit and UnitExists(unit) and not UnitIsDead(unit) then
-                aliveTracked = aliveTracked + 1
+            if unit and UnitExists(unit) then
+                if not UnitIsDead(unit) then
+                    aliveTracked = aliveTracked + 1
+                end
+            else
+                unresolvedTracked = unresolvedTracked + 1
             end
         end
+    else
+        return
     end
 
-    if aliveTracked == 0 then
+    -- Only auto-reset at combat end when every tracked mob is currently resolvable
+    -- and none are alive. This avoids false resets when mobs are out of range.
+    if aliveTracked == 0 and unresolvedTracked == 0 then
         self:ResetSession(true)
         if addon.Print then
             addon.Print("Combat ended - session reset.")
