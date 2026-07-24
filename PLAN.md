@@ -17,8 +17,10 @@ A TBC Classic WoW addon for tanks that automates raid target marking during dung
 6. [Core Algorithms](#core-algorithms)
 7. [UI Design](#ui-design)
 8. [Implementation Milestones](#implementation-milestones)
-9. [Limitations & Considerations](#limitations--considerations)6. [Planned: Auto Pack Reset](#planned-auto-pack-reset)
-7. [Planned: F-Key Mark Assignment Hotkeys](#planned-f-key-mark-assignment-hotkeys)
+9. [Limitations & Considerations](#limitations--considerations)
+10. [Planned: Auto Pack Reset](#planned-auto-pack-reset)
+11. [Planned: F-Key Mark Assignment Hotkeys](#planned-f-key-mark-assignment-hotkeys)
+12. [Planned: UX & Debug Enhancements](#planned-ux--debug-enhancements)
 ---
 
 ## Overview & Goals
@@ -243,10 +245,7 @@ Each mob entry in the database is classified as one of:
 
 | Priority Type   | Assigned Mark  | Meaning                          |
 |-----------------|----------------|----------------------------------|
-| `kill1`         | Skull (8)      | Highest threat, kill first       |
-| `kill2`         | Cross (7)      | Kill second                      |
-| `kill3`         | Square (6)     | Kill third                       |
-| `kill4`         | Circle (2)     | Kill fourth / flex kill          |
+| `kill`          | From kill order | Kill target; icon chosen by rank |
 | `cc_sheep`      | Moon (5)       | Polymorph target                 |
 | `cc_sap`        | Triangle (4)   | Sap target                       |
 | `cc_banish`     | Diamond (3)    | Banish/Fear target               |
@@ -254,6 +253,8 @@ Each mob entry in the database is classified as one of:
 | `cc_trap`       | Star (1)       | Hunter trap target (fallback)    |
 | `skip`          | (none)         | Ignore entirely (e.g. totems)    |
 | `auto`          | (computed)     | No explicit rule; use heuristics |
+
+Each entry can also define `killRank` (lower is higher priority) used whenever a mob is in the kill bucket.
 
 The user can **remap which mark goes to which priority type** in the settings UI, since group composition varies.
 
@@ -290,16 +291,15 @@ Output: assignments{}  -- guid → markIndex
 
      For each mob with CC priority:
          If that CC type is not available in the current group,
-         downgrade mob to next valid action in order:
-             explicit kill* in DB > alternative available CC > kill3
+         downgrade mob to `kill` and sort by `killRank`.
 
 4. SORT & ASSIGN PHASE
-   Separate into two lists:
-     killList    = all mobs with kill* priority
+     Separate into two lists:
+         killList    = all mobs with kill priority
      ccList      = all mobs with cc_* priority
 
-   Sort killList by priority weight:
-     kill1 > kill2 > kill3 > kill4 > auto_elite > auto_normal
+     Sort killList by rank and fallback heuristics:
+         lower killRank first, then explicit priority/heuristic tiebreakers
 
    Sort ccList by CC type (user-configured preference order)
 
@@ -324,8 +324,8 @@ Both are configurable via the settings panel.
 #### Conflict Resolution
 
 If two mobs in the session share the same desired mark:
-- Higher-explicit-priority wins (e.g., two `kill1` database entries → first-scrubbed gets Skull, second gets Cross)
-- Ties in the same priority level are broken by: explicit DB entry > elite classification > normal
+- Lower `killRank` wins.
+- Ties are broken by: explicit DB entry > heuristic weight > scrub order.
 
 ---
 
@@ -358,12 +358,19 @@ Sections:
    - Export: serializes entire mob database to a copyable string in a scrollable text box
    - Import: paste string into text box → validate → merge or replace
 
+5. **Dungeon Priorities (implemented)**
+    - Dedicated panel opened via `/sm dungeon` or Settings button
+    - Dungeon dropdown defaults to current dungeon zone when available
+    - Per-mob editable `priorityType` and `killRank`
+    - Row striping/separators for quick scanning during runs
+
 #### Mob Database Editor (per-entry)
 
 Fields:
 - **NPC ID** (auto-populated if added from target; or typed manually)
 - **Mob Name** (cosmetic label only; NPC ID is the key)
-- **Priority Type** (dropdown: kill1–kill4, cc_sheep, cc_sap, cc_banish, cc_shackle, cc_trap, skip)
+- **Priority Type** (dropdown: kill, cc_sheep, cc_sap, cc_banish, cc_shackle, cc_trap, skip, auto)
+- **Kill Rank** (number; lower is higher priority)
 - **Notes** (free text; e.g. "Mana Wyrm — interrupt arcane missiles")
 - **Zone / Dungeon** (optional tag for filtering; e.g. "Hellfire Ramparts")
 
@@ -372,7 +379,7 @@ Fields:
 A human-readable, copy-pasteable string format. Uses a simple pipe/comma-delimited encoding to avoid JSON dependencies:
 
 ```
-SMDB:1:28473,kill1,Watchkeeper Gargolmar,Hellfire Ramparts|17816,cc_sheep,Bonechewer Beastmaster,Hellfire Ramparts|...
+SMDB:1:28473,kill,Watchkeeper Gargolmar,Hellfire Ramparts|17816,cc_sheep,Bonechewer Beastmaster,Hellfire Ramparts|...
 ```
 
 Format: `SMDB:<version>:<entry1>|<entry2>|...`
@@ -411,10 +418,7 @@ SmartMarkDB = {
             cc    = { 5, 4, 3, 1 },      -- Moon, Triangle, Diamond, Star
         },
         priorityToMark = {               -- user can remap these
-            kill1    = 8,
-            kill2    = 7,
-            kill3    = 6,
-            kill4    = 2,
+            kill     = 8,
             cc_sheep = 5,
             cc_sap   = 4,
             cc_banish = 3,
@@ -429,6 +433,7 @@ SmartMarkDB = {
         ["17816"] = {
             name         = "Bonechewer Beastmaster",
             priorityType = "cc_sheep",
+            killRank     = 30,
             notes        = "",
             zone         = "Hellfire Ramparts",
             source       = "user",       -- "user" | "imported" | "builtin"
@@ -761,18 +766,19 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 
 ## Implementation Milestones
 
-### Current Status Snapshot (2026-07-02)
+### Current Status Snapshot (2026-07-24)
 
 - Core addon scaffold is implemented and loadable via `SmartMark.toc`.
 - Core scrub-mark loop works (hold/toggle session, mouseover capture, temporary marks, deferred/realtime reassignment).
-- Clear-marks keybind exists with retry sweeps for delayed token availability.
-- Settings panel is functional for core toggles/modes/modifier keys, including auto-reset toggle.
-- Import/export module is implemented with slash commands and an in-game import/export window.
-- Mark application retry queue implemented via `NAME_PLATE_UNIT_ADDED` — queued marks apply as units re-enter nameplate range.
-- Auto pack reset implemented: all tracked mobs dying fires `ResetSession` automatically.
-- F-key quick-assign bindings implemented (`Ctrl+Alt+F1`–`F8`) with configurable priority mapping.
-- Overwrite-existing-marks bug fixed: reassignment no longer force-resets manually placed marks.
-- Remaining high-priority work: mob database curation, full mob editor CRUD UI, mark remapping UI, F-key remapping dropdowns in Settings Panel.
+- Config and UI compatibility fixes are in place for classic frame backdrops.
+- Smart reassignment tracks addon-applied marks, preventing stale temporary skull/cross assignments.
+- Pending mark sweep retries now run continuously (not only on `NAME_PLATE_UNIT_ADDED`).
+- CC-unavailable fallback now downgrades to kill flow with rank-based ordering.
+- Priority model now supports unified `kill` plus per-mob `killRank`.
+- Runtime migration normalizes legacy `kill1`–`kill4` to `kill` with default ranks.
+- New in-game commands: `/sm prio`, `/sm rank`, `/sm dungeon`.
+- Dungeon Priorities UI implemented: dungeon dropdown + per-mob priority/rank editing + improved row readability.
+- Remaining high-priority work: full Mob Editor CRUD UI, settings-side mark remap editor, F-key remap dropdowns, UX polish/debug helpers.
 
 ### Milestone 1 — Skeleton & Core Loop
 
@@ -796,8 +802,9 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 
 ### Milestone 3 — Configuration UI
 
-- [~] `UI/SettingsPanel.lua` — standalone frame, modifier key picker, mode toggles, auto-reset toggle (functional; tabs and F-key remapping dropdowns still pending)
-- [ ] `UI/MobEditor.lua` — scrollable list + add/edit/delete + "Add from Target" shortcut
+- [~] `UI/SettingsPanel.lua` — standalone frame, modifier key picker, mode toggles, auto-reset toggle, Dungeon Priorities entrypoint (tabs and full remapping still pending)
+- [ ] `UI/MobEditor.lua` — full scrollable CRUD list + add/edit/delete + "Add from Target" shortcut
+- [x] `UI/DungeonPriorityPanel.lua` — dungeon dropdown + per-mob priority/rank editor + live tuning UX
 - [ ] Mark order remapping UI
 - [x] F-key quick-assign bindings (`Bindings.xml` + 8 global stubs in `SmartMark.lua` + `fKeyPriorityMap` defaults)
 - [ ] 8-dropdown F-Key Quick Assign section in Settings Panel
@@ -812,14 +819,15 @@ Shows current session marks in a compact list. Fades out when marking deactivate
 
 ### Milestone 5 — Polish & Dungeon Data
 
-- [ ] Populate initial mob database with TBC Classic dungeon mobs (based on your research)
+- [x] Populate initial mob database with TBC Classic dungeon mobs (built-in DB present and tunable in-game)
 - [x] Session overlay HUD
 - [x] `NAME_PLATE_UNIT_ADDED` retry for deferred mark failures
+- [x] OnUpdate pending-mark sweep for out-of-range recovery
 - [x] Combat state handling (disable in combat option)
 - [x] `/sm status` command showing current session mobs and marks
 - [x] Auto pack reset on all-mobs-dead (`COMBAT_LOG_EVENT_UNFILTERED` → `UNIT_DIED` tracking)
 - [x] `autoResetOnPackDeath` and `autoResetMinMobs` settings + Settings Panel checkbox
-- [ ] **Deliverable:** Ready-to-use addon with practical dungeon data
+- [~] **Deliverable:** Ready-to-use addon with practical dungeon data (remaining polish: debug/inspect UX + reset helpers)
 
 ---
 
@@ -1002,6 +1010,32 @@ Under a new sub-section **"F-Key Quick Assign"**:
 ### Milestone Placement
 
 This belongs in **Milestone 3 — Configuration UI**, since it requires both `Bindings.xml` entries and a Settings Panel section. The global stub functions live in `SmartMark.lua`.
+
+---
+
+## Planned: UX & Debug Enhancements
+
+### 1) Resolved-Decision Tooltip/Inspector
+
+- Add per-row hover details in Dungeon Priorities UI:
+    - effective priority type
+    - effective kill rank
+    - current fallback reason (e.g., "cc_sheep unavailable -> kill")
+    - currently assigned icon (if in active session)
+
+### 2) Reset Dungeon to Defaults
+
+- Add a one-click button to restore all entries for selected dungeon to builtin defaults.
+- Add confirm dialog and optional "reset ranks only" mode.
+
+### 3) Lightweight Debug Mode
+
+- Add `/sm debug on|off` for controlled chat logging.
+- Log key decisions only:
+    - lookup hit/miss
+    - CC availability snapshot
+    - fallback path
+    - final assignment per GUID
 
 ---
 
