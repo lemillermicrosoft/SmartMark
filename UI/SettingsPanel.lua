@@ -5,6 +5,7 @@ local UI = addon.UI
 
 local panel
 local controls = {}
+local checkboxCounter = 0
 
 local function setConfig(path, value)
     if addon.Config then
@@ -20,9 +21,18 @@ local function getConfig(path)
 end
 
 local function createCheckButton(parent, label, x, y, path)
-    local checkbox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
+    checkboxCounter = checkboxCounter + 1
+    local name = "SmartMarkSettingsCheck" .. checkboxCounter
+    local checkbox = CreateFrame("CheckButton", name, parent, "UICheckButtonTemplate")
     checkbox:SetPoint("TOPLEFT", x, y)
-    checkbox.Text:SetText(label)
+
+    local text = checkbox.Text or _G[name .. "Text"]
+    if not text then
+        text = checkbox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        text:SetPoint("LEFT", checkbox, "RIGHT", 2, 1)
+    end
+    text:SetText(label)
+
     checkbox:SetScript("OnClick", function(self)
         setConfig(path, self:GetChecked() and true or false)
     end)
@@ -76,17 +86,20 @@ local function createPanel()
         return
     end
 
-    panel = CreateFrame("Frame", "SmartMarkSettingsPanel", UIParent)
+    local frameTemplate = BackdropTemplateMixin and "BackdropTemplate" or nil
+    panel = CreateFrame("Frame", "SmartMarkSettingsPanel", UIParent, frameTemplate)
     panel:SetSize(560, 450)
     panel:SetPoint("CENTER")
-    panel:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = { left = 11, right = 11, top = 11, bottom = 11 },
-    })
+    if panel.SetBackdrop then
+        panel:SetBackdrop({
+            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            tile = true,
+            tileSize = 32,
+            edgeSize = 32,
+            insets = { left = 11, right = 11, top = 11, bottom = 11 },
+        })
+    end
     panel:Hide()
 
     local title = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
@@ -175,11 +188,22 @@ local function createPanel()
 end
 
 function UI:OpenConfig()
-    createPanel()
-    if panel:IsShown() then
-        panel:Hide()
-    else
-        refreshControls()
-        panel:Show()
+    local ok, err = pcall(function()
+        createPanel()
+        if panel:IsShown() then
+            panel:Hide()
+        else
+            refreshControls()
+            panel:Show()
+        end
+    end)
+
+    if not ok then
+        if addon.Print then
+            addon.Print("Failed to open settings: " .. tostring(err))
+        end
+        return false
     end
+
+    return panel and panel:IsShown() or false
 end

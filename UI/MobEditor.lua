@@ -9,17 +9,20 @@ local function createWindow()
         return
     end
 
-    frame = CreateFrame("Frame", "SmartMarkImportExportFrame", UIParent)
+    local frameTemplate = BackdropTemplateMixin and "BackdropTemplate" or nil
+    frame = CreateFrame("Frame", "SmartMarkImportExportFrame", UIParent, frameTemplate)
     frame:SetSize(700, 420)
     frame:SetPoint("CENTER")
-    frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = { left = 11, right = 11, top = 11, bottom = 11 },
-    })
+    if frame.SetBackdrop then
+        frame:SetBackdrop({
+            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            tile = true,
+            tileSize = 32,
+            edgeSize = 32,
+            insets = { left = 11, right = 11, top = 11, bottom = 11 },
+        })
+    end
     frame:Hide()
 
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")

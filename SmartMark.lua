@@ -107,9 +107,28 @@ local function handleSlashCommand(input)
 
     if cmd == "config" then
         if addon.UI and addon.UI.OpenConfig then
-            addon.UI:OpenConfig()
+            local ok, shownOrErr = pcall(function()
+                return addon.UI:OpenConfig()
+            end)
+
+            if not ok then
+                printMsg("Config UI error: " .. tostring(shownOrErr))
+                if addon.UI and addon.UI.OpenMobEditor then
+                    addon.UI:OpenMobEditor()
+                    printMsg("Opened Import/Export window as fallback")
+                end
+            elseif shownOrErr then
+                printMsg("Config opened")
+            else
+                printMsg("Config closed")
+            end
         else
-            printMsg("Config UI not implemented yet")
+            if addon.UI and addon.UI.OpenMobEditor then
+                addon.UI:OpenMobEditor()
+                printMsg("Config UI unavailable; opened Import/Export window")
+            else
+                printMsg("Config UI not implemented yet")
+            end
         end
         return
     end

@@ -1,18 +1,23 @@
 local addon = SmartMark
 addon.UI = addon.UI or {}
 
-local overlay = CreateFrame("Frame", "SmartMarkSessionOverlay", UIParent)
+local frameTemplate = BackdropTemplateMixin and "BackdropTemplate" or nil
+local overlay = CreateFrame("Frame", "SmartMarkSessionOverlay", UIParent, frameTemplate)
 overlay:SetSize(320, 88)
 overlay:SetPoint("CENTER", 0, 220)
-overlay:SetBackdrop({
-    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true,
-    tileSize = 8,
-    edgeSize = 10,
-    insets = { left = 3, right = 3, top = 3, bottom = 3 },
-})
-overlay:SetBackdropColor(0, 0, 0, 0.75)
+if overlay.SetBackdrop then
+    overlay:SetBackdrop({
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        tile = true,
+        tileSize = 8,
+        edgeSize = 10,
+        insets = { left = 3, right = 3, top = 3, bottom = 3 },
+    })
+    if overlay.SetBackdropColor then
+        overlay:SetBackdropColor(0, 0, 0, 0.75)
+    end
+end
 overlay:Hide()
 
 local text = overlay:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
