@@ -6,6 +6,10 @@ local UI = addon.UI
 local panel
 local zoneDropdown
 local scrollFrame
+local listFrame
+local rowCountText
+local scrollBar
+local syncingScrollBar = false
 local rows = {}
 
 local state = {
@@ -37,7 +41,17 @@ local VALID_PRIORITY = {
 }
 
 local ROW_HEIGHT = 24
-local VISIBLE_ROWS = 12
+local VISIBLE_ROWS = 11
+local LIST_WIDTH = 680
+
+local COL_NAME_X = 8
+local COL_NPC_X = 258
+local COL_PRIORITY_X = 326
+local COL_RANK_X = 574
+
+local SEP_1_X = 250
+local SEP_2_X = 320
+local SEP_3_X = 560
 
 local function printMsg(msg)
     if addon.Print then
@@ -149,6 +163,9 @@ local function refreshRows()
     end
 
     local offset = FauxScrollFrame_GetOffset(scrollFrame) or 0
+    local total = #state.entries
+    local firstShown = total > 0 and (offset + 1) or 0
+    local lastShown = math.min(offset + VISIBLE_ROWS, total)
 
     for i = 1, VISIBLE_ROWS do
         local row = rows[i]
@@ -186,6 +203,65 @@ local function refreshRows()
     end
 
     FauxScrollFrame_Update(scrollFrame, #state.entries, VISIBLE_ROWS, ROW_HEIGHT)
+
+    if scrollBar then
+        local maxOffset = math.max(0, total - VISIBLE_ROWS)
+        syncingScrollBar = true
+        scrollBar:SetMinMaxValues(0, maxOffset)
+        scrollBar:SetValueStep(1)
+        scrollBar:SetValue(offset)
+        syncingScrollBar = false
+
+        local upButton = _G[scrollBar:GetName() .. "ScrollUpButton"]
+        local downButton = _G[scrollBar:GetName() .. "ScrollDownButton"]
+        if upButton and downButton then
+            if maxOffset <= 0 then
+                upButton:Disable()
+                downButton:Disable()
+            else
+                upButton:Enable()
+                downButton:Enable()
+            end
+        end
+    end
+
+    if rowCountText then
+        if total == 0 then
+            rowCountText:SetText("Showing 0 of 0")
+        else
+            rowCountText:SetText(string.format("Showing %d-%d of %d", firstShown, lastShown, total))
+        end
+    end
+end
+
+local function scrollByRows(deltaRows)
+    if not scrollFrame then
+        return
+    end
+
+    local total = #state.entries
+    local maxOffset = math.max(0, total - VISIBLE_ROWS)
+    local currentOffset = FauxScrollFrame_GetOffset(scrollFrame) or 0
+    local nextOffset = currentOffset + deltaRows
+
+    if nextOffset < 0 then
+        nextOffset = 0
+    elseif nextOffset > maxOffset then
+        nextOffset = maxOffset
+    end
+
+    if nextOffset ~= currentOffset then
+        scrollFrame:SetVerticalScroll(nextOffset * ROW_HEIGHT)
+        refreshRows()
+    end
+end
+
+local function handleMouseWheel(delta)
+    if delta > 0 then
+        scrollByRows(-1)
+    else
+        scrollByRows(1)
+    end
 end
 
 local function refreshEntries()
@@ -261,52 +337,62 @@ end
 
 local function createRow(parent, index)
     local row = CreateFrame("Frame", nil, parent)
-    row:SetSize(640, ROW_HEIGHT)
+    row:SetSize(LIST_WIDTH, ROW_HEIGHT)
     row:SetPoint("TOPLEFT", 0, -((index - 1) * ROW_HEIGHT))
 
     row.bg = row:CreateTexture(nil, "BACKGROUND")
     row.bg:SetAllPoints(true)
+    row.bg:SetTexture("Interface\\Buttons\\WHITE8x8")
     if math.fmod(index, 2) == 0 then
-        row.bg:SetTexture(1, 1, 1, 0.06)
+        row.bg:SetVertexColor(1, 1, 1, 0.035)
     else
-        row.bg:SetTexture(0, 0, 0, 0.14)
+        row.bg:SetVertexColor(0, 0, 0, 0.16)
     end
 
     row.sep1 = row:CreateTexture(nil, "BORDER")
-    row.sep1:SetTexture(1, 1, 1, 0.08)
-    row.sep1:SetPoint("TOPLEFT", 255, -2)
-    row.sep1:SetPoint("BOTTOMLEFT", 255, 2)
+    row.sep1:SetTexture("Interface\\Buttons\\WHITE8x8")
+    row.sep1:SetVertexColor(1, 1, 1, 0.07)
+    row.sep1:SetPoint("TOPLEFT", SEP_1_X, -1)
+    row.sep1:SetPoint("BOTTOMLEFT", SEP_1_X, 1)
     row.sep1:SetWidth(1)
 
     row.sep2 = row:CreateTexture(nil, "BORDER")
-    row.sep2:SetTexture(1, 1, 1, 0.08)
-    row.sep2:SetPoint("TOPLEFT", 312, -2)
-    row.sep2:SetPoint("BOTTOMLEFT", 312, 2)
+    row.sep2:SetTexture("Interface\\Buttons\\WHITE8x8")
+    row.sep2:SetVertexColor(1, 1, 1, 0.07)
+    row.sep2:SetPoint("TOPLEFT", SEP_2_X, -1)
+    row.sep2:SetPoint("BOTTOMLEFT", SEP_2_X, 1)
     row.sep2:SetWidth(1)
 
     row.sep3 = row:CreateTexture(nil, "BORDER")
-    row.sep3:SetTexture(1, 1, 1, 0.08)
-    row.sep3:SetPoint("TOPLEFT", 510, -2)
-    row.sep3:SetPoint("BOTTOMLEFT", 510, 2)
+    row.sep3:SetTexture("Interface\\Buttons\\WHITE8x8")
+    row.sep3:SetVertexColor(1, 1, 1, 0.07)
+    row.sep3:SetPoint("TOPLEFT", SEP_3_X, -1)
+    row.sep3:SetPoint("BOTTOMLEFT", SEP_3_X, 1)
     row.sep3:SetWidth(1)
 
     row.bottomLine = row:CreateTexture(nil, "BORDER")
-    row.bottomLine:SetTexture(1, 1, 1, 0.10)
+    row.bottomLine:SetTexture("Interface\\Buttons\\WHITE8x8")
+    row.bottomLine:SetVertexColor(1, 1, 1, 0.08)
     row.bottomLine:SetPoint("BOTTOMLEFT", 0, 0)
     row.bottomLine:SetPoint("BOTTOMRIGHT", 0, 0)
     row.bottomLine:SetHeight(1)
 
+    row:EnableMouseWheel(true)
+    row:SetScript("OnMouseWheel", function(_, delta)
+        handleMouseWheel(delta)
+    end)
+
     row.nameText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    row.nameText:SetPoint("LEFT", 8, 0)
+    row.nameText:SetPoint("LEFT", COL_NAME_X, 0)
     row.nameText:SetJustifyH("LEFT")
-    row.nameText:SetWidth(250)
+    row.nameText:SetWidth(236)
 
     row.npcText = row:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    row.npcText:SetPoint("LEFT", 262, 0)
+    row.npcText:SetPoint("LEFT", COL_NPC_X, 0)
     row.npcText:SetJustifyH("LEFT")
-    row.npcText:SetWidth(46)
+    row.npcText:SetWidth(56)
 
-    row.priorityDropdown = createPriorityDropdown(row, 168, 314, 8, function(value)
+    row.priorityDropdown = createPriorityDropdown(row, 148, COL_PRIORITY_X, 8, function(value)
         if not row.data then
             return
         end
@@ -317,8 +403,8 @@ local function createRow(parent, index)
     end)
 
     row.rankBox = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
-    row.rankBox:SetSize(58, 20)
-    row.rankBox:SetPoint("LEFT", 518, 0)
+    row.rankBox:SetSize(54, 20)
+    row.rankBox:SetPoint("LEFT", COL_RANK_X, 0)
     row.rankBox:SetAutoFocus(false)
     row.rankBox:SetNumeric(true)
     row.rankBox:SetMaxLetters(3)
@@ -329,10 +415,6 @@ local function createRow(parent, index)
     row.rankBox:SetScript("OnEditFocusLost", function()
         commitRank(row)
     end)
-
-    local hint = row:CreateFontString(nil, "OVERLAY", "GameFontDisableTiny")
-    hint:SetPoint("LEFT", 582, 0)
-    hint:SetText("1=top")
 
     return row
 end
@@ -346,6 +428,10 @@ local function createPanel()
     panel = CreateFrame("Frame", "SmartMarkDungeonPriorityPanel", UIParent, frameTemplate)
     panel:SetSize(760, 470)
     panel:SetPoint("CENTER")
+    panel:EnableMouseWheel(true)
+    panel:SetScript("OnMouseWheel", function(_, delta)
+        handleMouseWheel(delta)
+    end)
     if panel.SetBackdrop then
         panel:SetBackdrop({
             bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
@@ -393,26 +479,63 @@ local function createPanel()
     headerName:SetText("Mob")
 
     local headerNPC = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerNPC:SetPoint("TOPLEFT", 286, -126)
+    headerNPC:SetPoint("TOPLEFT", 282, -126)
     headerNPC:SetText("NPC ID")
 
     local headerPriority = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerPriority:SetPoint("TOPLEFT", 350, -126)
+    headerPriority:SetPoint("TOPLEFT", 358, -126)
     headerPriority:SetText("Priority Type")
 
     local headerRank = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    headerRank:SetPoint("TOPLEFT", 540, -126)
+    headerRank:SetPoint("TOPLEFT", 578, -126)
     headerRank:SetText("Kill Rank")
 
     local headerLine = panel:CreateTexture(nil, "BORDER")
-    headerLine:SetTexture(1, 1, 1, 0.18)
+    headerLine:SetTexture("Interface\\Buttons\\WHITE8x8")
+    headerLine:SetVertexColor(1, 1, 1, 0.18)
     headerLine:SetPoint("TOPLEFT", 24, -140)
     headerLine:SetPoint("TOPRIGHT", -56, -140)
     headerLine:SetHeight(1)
 
-    local listFrame = CreateFrame("Frame", nil, panel)
-    listFrame:SetSize(680, ROW_HEIGHT * VISIBLE_ROWS)
+    local hint = panel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    hint:SetPoint("TOPRIGHT", -56, -44)
+    hint:SetText("Lower rank = higher kill order")
+
+    listFrame = CreateFrame("Frame", nil, panel)
+    listFrame:SetSize(LIST_WIDTH, ROW_HEIGHT * VISIBLE_ROWS)
     listFrame:SetPoint("TOPLEFT", 24, -144)
+    listFrame:EnableMouseWheel(true)
+    listFrame:SetScript("OnMouseWheel", function(_, delta)
+        handleMouseWheel(delta)
+    end)
+
+    local listBorderTop = panel:CreateTexture(nil, "ARTWORK")
+    listBorderTop:SetTexture("Interface\\Buttons\\WHITE8x8")
+    listBorderTop:SetVertexColor(1, 1, 1, 0.10)
+    listBorderTop:SetPoint("TOPLEFT", listFrame, -1, 1)
+    listBorderTop:SetPoint("TOPRIGHT", listFrame, 1, 1)
+    listBorderTop:SetHeight(1)
+
+    local listBorderBottom = panel:CreateTexture(nil, "ARTWORK")
+    listBorderBottom:SetTexture("Interface\\Buttons\\WHITE8x8")
+    listBorderBottom:SetVertexColor(1, 1, 1, 0.10)
+    listBorderBottom:SetPoint("BOTTOMLEFT", listFrame, -1, -1)
+    listBorderBottom:SetPoint("BOTTOMRIGHT", listFrame, 1, -1)
+    listBorderBottom:SetHeight(1)
+
+    local listBorderLeft = panel:CreateTexture(nil, "ARTWORK")
+    listBorderLeft:SetTexture("Interface\\Buttons\\WHITE8x8")
+    listBorderLeft:SetVertexColor(1, 1, 1, 0.10)
+    listBorderLeft:SetPoint("TOPLEFT", listFrame, -1, 1)
+    listBorderLeft:SetPoint("BOTTOMLEFT", listFrame, -1, -1)
+    listBorderLeft:SetWidth(1)
+
+    local listBorderRight = panel:CreateTexture(nil, "ARTWORK")
+    listBorderRight:SetTexture("Interface\\Buttons\\WHITE8x8")
+    listBorderRight:SetVertexColor(1, 1, 1, 0.10)
+    listBorderRight:SetPoint("TOPRIGHT", listFrame, 1, 1)
+    listBorderRight:SetPoint("BOTTOMRIGHT", listFrame, 1, -1)
+    listBorderRight:SetWidth(1)
 
     scrollFrame = CreateFrame("ScrollFrame", "SmartMarkDungeonPriorityScroll", panel, "FauxScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", listFrame, "TOPRIGHT", 0, -2)
@@ -420,6 +543,34 @@ local function createPanel()
     scrollFrame:SetScript("OnVerticalScroll", function(self, offset)
         FauxScrollFrame_OnVerticalScroll(self, offset, ROW_HEIGHT, refreshRows)
     end)
+    scrollFrame:EnableMouseWheel(true)
+    scrollFrame:SetScript("OnMouseWheel", function(_, delta)
+        handleMouseWheel(delta)
+    end)
+
+    scrollBar = CreateFrame("Slider", "SmartMarkDungeonPriorityPanelScrollBar", panel, "UIPanelScrollBarTemplate")
+    scrollBar:SetPoint("TOPLEFT", listFrame, "TOPRIGHT", 8, -18)
+    scrollBar:SetPoint("BOTTOMLEFT", listFrame, "BOTTOMRIGHT", 8, 18)
+    scrollBar:SetMinMaxValues(0, 0)
+    scrollBar:SetValueStep(1)
+    scrollBar:SetObeyStepOnDrag(true)
+    scrollBar:SetValue(0)
+    scrollBar:SetScript("OnValueChanged", function(_, value)
+        if syncingScrollBar then
+            return
+        end
+
+        local offset = math.floor((value or 0) + 0.5)
+        FauxScrollFrame_OnVerticalScroll(scrollFrame, offset * ROW_HEIGHT, ROW_HEIGHT, refreshRows)
+    end)
+
+    rowCountText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    rowCountText:SetPoint("BOTTOMLEFT", 120, 24)
+    rowCountText:SetText("Showing 0 of 0")
+
+    local wheelHint = panel:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    wheelHint:SetPoint("BOTTOMLEFT", 120, 12)
+    wheelHint:SetText("Mouse wheel or side arrows to scroll")
 
     for i = 1, VISIBLE_ROWS do
         rows[i] = createRow(listFrame, i)

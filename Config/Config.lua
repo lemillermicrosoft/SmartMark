@@ -86,6 +86,14 @@ function Config:Initialize()
         end
     end
 
+    if type(addon.RaidMobDB) == "table" then
+        for npcID, entry in pairs(addon.RaidMobDB) do
+            if SmartMarkDB.mobs[npcID] == nil then
+                SmartMarkDB.mobs[npcID] = deepCopy(entry)
+            end
+        end
+    end
+
     ensureMobRankingDefaults(SmartMarkDB.mobs)
 end
 

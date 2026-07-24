@@ -2,7 +2,7 @@
 ## Title: SmartMark
 ## Notes: Smart raid mark assignment for TBC Classic tanks
 ## Author: Leroy
-## Version: 0.1.1-alpha
+## Version: 0.2.0
 ## IconTexture: Interface\AddOns\SmartMark\Media\SmartMarkLogo.png
 ## SavedVariables: SmartMarkDB
 ## SavedVariablesPerCharacter: SmartMarkCharDB
@@ -12,6 +12,7 @@ Bindings.xml
 SmartMark.lua
 
 Config\BuiltinMobDB.lua
+Config\RaidMobDB.lua
 
 Config\Defaults.lua
 Config\Config.lua

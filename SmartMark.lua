@@ -1,6 +1,6 @@
 SmartMark = SmartMark or {}
 
-SmartMark.VERSION = "0.1.1-alpha"
+SmartMark.VERSION = "0.2.0"
 
 BINDING_HEADER_SMARTMARK = "SmartMark"
 BINDING_NAME_SMARTMARK_CLEAR_MARKS = "Clear all marks"

@@ -193,6 +193,12 @@ function MarkManager:StartSession(reason)
         self:Initialize()
     end
 
+    -- If a prior pack left session state behind, clear it before starting
+    -- a fresh out-of-combat session so the next pull begins at skull again.
+    if not self.session.active and self.session.mobs and #self.session.mobs > 0 and not InCombatLockdown() then
+        self:ResetSession(false)
+    end
+
     self.session.active = true
     self.session.reason = reason or "unknown"
     self:UpdateOverlayState()
