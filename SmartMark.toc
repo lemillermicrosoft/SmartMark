@@ -1,4 +1,4 @@
-## Interface: 20504
+﻿## Interface: 20506
 ## Title: SmartMark
 ## Notes: Smart raid mark assignment for TBC Classic tanks
 ## Author: Leroy
@@ -27,3 +27,5 @@ UI\SettingsPanel.lua
 UI\DungeonPriorityPanel.lua
 UI\MobEditor.lua
 UI\SessionOverlay.lua
+
+
