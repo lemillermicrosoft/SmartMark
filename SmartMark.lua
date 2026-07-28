@@ -1,6 +1,6 @@
-SmartMark = SmartMark or {}
+﻿SmartMark = SmartMark or {}
 
-SmartMark.VERSION = "0.2.0"
+SmartMark.VERSION = "0.2.1"
 
 BINDING_HEADER_SMARTMARK = "SmartMark"
 BINDING_NAME_SMARTMARK_CLEAR_MARKS = "Clear all marks"
@@ -229,8 +229,8 @@ function SmartMark_ToggleSession()
     end
 end
 
--- F-key quick-assign globals (invoked by Ctrl+Alt+F1–F8 keybindings).
--- Each binding remaps one priority type → its F-key's icon index.
+-- F-key quick-assign globals (invoked by Ctrl+Alt+F1â€“F8 keybindings).
+-- Each binding remaps one priority type â†’ its F-key's icon index.
 local markIconNames = { "Star", "Circle", "Diamond", "Triangle", "Moon", "Square", "Cross", "Skull" }
 for i = 1, 8 do
     _G["SmartMark_SetMarkF" .. i] = function()
@@ -502,3 +502,4 @@ boot:SetScript("OnEvent", function(_, event, arg1)
 
     printMsg("Loaded v" .. addon.VERSION)
 end)
+
