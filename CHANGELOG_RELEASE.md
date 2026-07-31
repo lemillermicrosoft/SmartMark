@@ -1,8 +1,7 @@
-﻿# v0.2.2
+﻿# v0.2.3
 
-Changes since v0.2.1.
+Changes since v0.2.2.
 
 ## Fixes
-- use category instead of header on Binding elements (#1) (#2) (623c165)
-- resolve relative -ZipPath against repo root before FileStream.OpenRead (5b1ec45)
+- remove incorrect XML namespace from Bindings root (#3) (#4) (d3c6b61)
 
