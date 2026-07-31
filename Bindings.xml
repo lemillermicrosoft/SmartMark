@@ -1,34 +1,34 @@
 <Bindings>
-    <Binding name="SMARTMARK_CLEAR_MARKS" header="SMARTMARK" default="ALT-SHIFT-DELETE">
+    <Binding name="SMARTMARK_CLEAR_MARKS" category="SMARTMARK" default="ALT-SHIFT-DELETE">
         SmartMark_ClearAllMarks()
     </Binding>
 
-    <Binding name="SMARTMARK_TOGGLE_SESSION" header="SMARTMARK">
+    <Binding name="SMARTMARK_TOGGLE_SESSION" category="SMARTMARK">
         SmartMark_ToggleSession()
     </Binding>
 
-    <Binding name="SMARTMARK_MARK_F1" header="SMARTMARK" default="CTRL-ALT-F1">
+    <Binding name="SMARTMARK_MARK_F1" category="SMARTMARK" default="CTRL-ALT-F1">
         SmartMark_SetMarkF1()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F2" header="SMARTMARK" default="CTRL-ALT-F2">
+    <Binding name="SMARTMARK_MARK_F2" category="SMARTMARK" default="CTRL-ALT-F2">
         SmartMark_SetMarkF2()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F3" header="SMARTMARK" default="CTRL-ALT-F3">
+    <Binding name="SMARTMARK_MARK_F3" category="SMARTMARK" default="CTRL-ALT-F3">
         SmartMark_SetMarkF3()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F4" header="SMARTMARK" default="CTRL-ALT-F4">
+    <Binding name="SMARTMARK_MARK_F4" category="SMARTMARK" default="CTRL-ALT-F4">
         SmartMark_SetMarkF4()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F5" header="SMARTMARK" default="CTRL-ALT-F5">
+    <Binding name="SMARTMARK_MARK_F5" category="SMARTMARK" default="CTRL-ALT-F5">
         SmartMark_SetMarkF5()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F6" header="SMARTMARK" default="CTRL-ALT-F6">
+    <Binding name="SMARTMARK_MARK_F6" category="SMARTMARK" default="CTRL-ALT-F6">
         SmartMark_SetMarkF6()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F7" header="SMARTMARK" default="CTRL-ALT-F7">
+    <Binding name="SMARTMARK_MARK_F7" category="SMARTMARK" default="CTRL-ALT-F7">
         SmartMark_SetMarkF7()
     </Binding>
-    <Binding name="SMARTMARK_MARK_F8" header="SMARTMARK" default="CTRL-ALT-F8">
+    <Binding name="SMARTMARK_MARK_F8" category="SMARTMARK" default="CTRL-ALT-F8">
         SmartMark_SetMarkF8()
     </Binding>
 </Bindings>
