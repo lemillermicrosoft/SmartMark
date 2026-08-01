@@ -1,6 +1,6 @@
 ﻿SmartMark = SmartMark or {}
 
-SmartMark.VERSION = "0.2.3"
+SmartMark.VERSION = "0.2.4"
 
 BINDING_HEADER_SMARTMARK = "SmartMark"
 BINDING_NAME_SMARTMARK_CLEAR_MARKS = "Clear all marks"
@@ -502,6 +502,7 @@ boot:SetScript("OnEvent", function(_, event, arg1)
 
     printMsg("Loaded v" .. addon.VERSION)
 end)
+
 
 
 

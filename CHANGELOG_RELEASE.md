@@ -1,7 +1,7 @@
-﻿# v0.2.3
+﻿# v0.2.4
 
-Changes since v0.2.2.
+Changes since v0.2.3.
 
-## Fixes
-- remove incorrect XML namespace from Bindings root (#3) (#4) (d3c6b61)
+## Other
+- Remove Bindings.xml from .toc to prevent double-load (#6) (b68e5ac)
 
