@@ -7,8 +7,6 @@
 ## SavedVariables: SmartMarkDB
 ## SavedVariablesPerCharacter: SmartMarkCharDB
 
-Bindings.xml
-
 SmartMark.lua
 
 Config\BuiltinMobDB.lua
@@ -27,8 +25,4 @@ UI\SettingsPanel.lua
 UI\DungeonPriorityPanel.lua
 UI\MobEditor.lua
 UI\SessionOverlay.lua
-
-
-
-
 
