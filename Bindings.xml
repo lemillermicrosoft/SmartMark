@@ -1,4 +1,5 @@
-<Bindings>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Bindings xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
     <Binding name="SMARTMARK_CLEAR_MARKS" category="SMARTMARK" default="ALT-SHIFT-DELETE">
         SmartMark_ClearAllMarks()
     </Binding>
